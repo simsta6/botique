@@ -1,12 +1,12 @@
 {
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "tsc & node .",
     "watch": "nodemon -e ts -w ./src -x npm run watch:serve",
     "watch:serve": "ts-node src/index.ts"
   },
   "dependencies": {
+    "@types/color": "^3.0.2",
+    "color": "^4.0.1",
     "express": "^4.17.1"
   },
   "devDependencies": {
