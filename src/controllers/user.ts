@@ -7,6 +7,8 @@ export interface User {
   address?: string
 }
 
-export const changeUserInfo = (_request: Request, res: Response): void => {
+export const changeUserInfo = (request: Request, res: Response): void => {
+  const userId = +request.params.id;
+
   res.status(200).send(constructResponse("Success"));
 };

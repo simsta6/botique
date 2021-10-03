@@ -1,6 +1,7 @@
 import { Item } from "./controllers/item";
 import { ChartItem } from "./controllers/chart";
 import { Order } from "./controllers/order";
+import { Review } from "./controllers/review";
 
 export const items: Item[] = [
   {id: 1, label: "first item", color: "FFFFFF"},
@@ -22,5 +23,16 @@ export const orders: Order[] = [
     items: [{id: 1, count: 1}],
     sellerId: 5,
     state: "approved"
+  }
+];
+
+export const reviews: Review[] = [
+  {
+    id: 1,
+    itemId: 1,
+    userId: 1,
+    title: "AAAA",
+    date: "NOT HAPPY",
+    rating: 5
   }
 ];

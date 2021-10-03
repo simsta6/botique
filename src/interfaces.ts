@@ -1,6 +1,6 @@
 interface ResponseMessage {
   status: "Success" | "Failed",
-  data: any
+  data: unknown
 }
 
-export const constructResponse = (status: "Success" | "Failed", data?: any): ResponseMessage => ({status, data});
+export const constructResponse = (status: "Success" | "Failed", data?: unknown): ResponseMessage => ({status, data});

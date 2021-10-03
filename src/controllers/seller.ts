@@ -15,6 +15,11 @@ export interface Seller extends User {
   rating: number
 }
 
+interface Shop {
+  address: string,
+  workingHours: string
+}
+
 
 export const addItem = (request: Request, res: Response): void => {
   const item: newItem = request.body;
@@ -28,6 +33,19 @@ export const addItem = (request: Request, res: Response): void => {
   const addedItem: Item = {...item, id: lastIndex + 1};
   items.push(addedItem);
   res.status(200).send(constructResponse("Success", addedItem));
+};
+
+export const deleteItem = (request: Request, res: Response): void => {
+  const id = +request.params.id;
+
+  const isItemExists = items.some(item => item.id === id);
+
+  if (!isItemExists) {
+    res.status(400).send(constructResponse("Failed"));
+    return;
+  }
+
+  res.status(200).send(constructResponse("Success"));
 };
 
 export const editItem = (request: Request, res: Response): void => {
@@ -60,4 +78,14 @@ export const changeOrderState = (request: Request, res: Response): void => {
   res.status(200).send(constructResponse("Success"));
 };
 
+export const addShop = (request: Request, res: Response): void => {
+  const shop: Shop = request.body;
+
+  if (shop.address === "" || shop.workingHours === "") {
+    res.status(400).send(constructResponse("Failed"));
+    return;
+  }
+
+  res.status(200).send(constructResponse("Success"));
+};
   
