@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { items, chart } from "./data";
+import { items, chart } from "../data";
 
 export interface ChartItem {
   id: number;
