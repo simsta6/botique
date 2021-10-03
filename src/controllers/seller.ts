@@ -2,24 +2,32 @@ import { Request, Response } from "express";
 import { Item } from "./item";
 import { items, itemsWaitingForApproval, orders } from "../data";
 import { orderState } from "./order";
+import { User } from "./user";
+import { constructResponse } from "../interfaces";
 
 interface newItem {
   label: string;
   color: string;
 }
 
+export interface Seller extends User {
+  shopName: string,
+  rating: number
+}
+
+
 export const addItem = (request: Request, res: Response): void => {
   const item: newItem = request.body;
 
   if (item.label === "" || item.color === "") {
-    res.status(400).send("Bad item description");
+    res.status(400).send(constructResponse("Failed"));
     return;
   }
 
   const lastIndex = Math.max(itemsWaitingForApproval.at(-1).id, items.at(-1).id);
   const addedItem: Item = {...item, id: lastIndex + 1};
   items.push(addedItem);
-  res.status(200).send(addedItem);
+  res.status(200).send(constructResponse("Success", addedItem));
 };
 
 export const editItem = (request: Request, res: Response): void => {
@@ -28,13 +36,13 @@ export const editItem = (request: Request, res: Response): void => {
   const oldItem = items.find(item => item.id === id);
 
   if (newItem.label === "" || newItem.color === "" || !oldItem) {
-    res.status(400).send("Bad request");
+    res.status(400).send(constructResponse("Failed"));
     return;
   }
   const newItemWithId = {...newItem, id: id};
 
   items.map(item => item.id === id && newItemWithId);
-  res.status(200).send(newItemWithId);
+  res.status(200).send(constructResponse("Success", newItemWithId));
 };
 
 export const changeOrderState = (request: Request, res: Response): void => {
@@ -43,40 +51,13 @@ export const changeOrderState = (request: Request, res: Response): void => {
   const newOrderState: orderState = request.body;
 
   if (!order) {
-    res.status(400).send("Bad request");
+    res.status(400).send(constructResponse("Failed"));
     return;
   }
 
   orders.forEach(x => x.id === orderId && (x.state = newOrderState));
 
-  res.status(200).send("Order state changed successfully");
+  res.status(200).send(constructResponse("Success"));
 };
 
-// export const approveOrder = (request: Request, res: Response): void => {
-//   const orderId = +request.params.id;
-//   const order = orders.find(x => x.id === orderId);
-  
-//   if (!order) {
-//     res.status(400).send("Bad request");
-//     return;
-//   }
-  
-//   orders.forEach(x => x.id === orderId && (x.state = "approved"));
-  
-//   res.status(200).send("Order approved successfully");
-// };
-  
-// export const cancelOrder = (request: Request, res: Response): void => {
-//   const orderId = +request.params.id;
-//   const order = orders.find(x => x.id === orderId);
-  
-//   if (!order) {
-//     res.status(400).send("Bad request");
-//     return;
-//   }
-  
-//   orders.forEach(x => x.id === orderId && (x.state = "canceled"));
-  
-//   res.status(200).send("Order canceled successfully");
-// };
   
