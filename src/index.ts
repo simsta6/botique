@@ -8,20 +8,20 @@ const server = express();
 const port = 5000;
 
 // Item
-server.get("/api/items", getAllItems);
-server.get("/api/items/:id", getItem);
-server.get("/api/items/:color", getFiltratedItems);
+server.get("/api/items", getAllItems); // Perziureti prekes
+server.get("/api/items/:id", getItem); // Perziureti preke
+server.get("/api/items/:color", getFiltratedItems); // Filtruoti prekes
 
 // Chart
-server.get("/api/chart", getAllItemsInChart);
-server.post("/api/chart-add/:id", addItemToChart);
+server.get("/api/chart", getAllItemsInChart); // Paziureti krepseli
+server.post("/api/chart-add/:id", addItemToChart); //Prideti preke i krepseli
 
 // Order
-server.post("/api/make-order", makeAnOrder);
+server.post("/api/make-order", makeAnOrder); // Atlikti uzsakyma
 
 // Seller
-server.post("/api/add-item", addItem);
-server.patch("/api/edit-item/:id", editItem);
-server.patch("/api/change-order-state/:id", changeOrderState);
+server.post("/api/add-item", addItem); // Registruoti produkte
+server.patch("/api/edit-item/:id", editItem); // Modifikuoti produkta
+server.patch("/api/change-order-state/:id", changeOrderState); // Keisti uzsakymo bukle, patvirtinti uzsakyma, atsaukti uzsakyma
 
 server.listen(port, () => console.log(`Running on port ${port}`));
