@@ -1,8 +1,10 @@
 {
   "main": "dist/index.js",
   "scripts": {
-    "watch": "nodemon -e ts -w ./src -x npm run watch:serve",
-    "watch:serve": "ts-node src/index.ts"
+    "watch": "nodemon -e ts -w ./src -x && ts-node src/index.ts"
+  },
+  "engines": {
+    "node": "16.6"
   },
   "dependencies": {
     "@types/color": "^3.0.2",
