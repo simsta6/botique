@@ -1,14 +1,17 @@
+import { users } from "./../data";
 import { Request, Response } from "express";
-import { constructResponse } from "../interfaces";
-
-export interface User {
-  id: number,
-  name: string,
-  address?: string
-}
+import { constructResponse, sendFailResponse, isIdExists, isBodyEmpty } from "../util";
 
 export const changeUserInfo = (request: Request, res: Response): void => {
-  const userId = +request.params.id;
+  try {
+    const userId = +request.params.id;
 
-  res.status(200).send(constructResponse("Success"));
+    if (isNaN(userId) || !isIdExists(users, userId) || isBodyEmpty(request))
+      throw new Error();
+
+    res.status(200).send(constructResponse("Success"));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
 };

@@ -1,67 +1,89 @@
 import { Request, Response } from "express";
-import { constructResponse } from "../interfaces";
-import { reviews } from "../data";
-
-export interface Review {
-  id: number;
-  itemId: number;
-  userId: number;
-  title: string;
-  date: string;
-  rating: 1 | 2 | 3 | 4 | 5;
-}
+import { Review } from "../interfaces";
+import { items, reviews } from "../data";
+import { constructResponse, isBodyEmpty, isIdExists, sendFailResponse } from "../util";
 
 export const addReview = (request: Request, res: Response): void => {
-  const review: Review = request.body;
+  try {
+    const reviewId = +request.params.id;
+    const newReview: Review = request.body;
 
-  if (review.title === "" || review.date === "") {
-    res.status(400).send(constructResponse("Failed"));
-    return;
+    if (isNaN(reviewId) || !isIdExists(reviews, reviewId) || isBodyEmpty(request) || newReview.title === "" || newReview.date === "")
+      throw new Error();
+
+    res.status(200).send(constructResponse("Success", newReview));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
   }
-
-  res.status(200).send(constructResponse("Success", review));
 };
 
 export const deleteReview = (request: Request, res: Response): void => {
-  const id = +request.params.id;
+  try {
+    const reviewId = +request.params.id;
 
-  const isReviewExists = true;
+    if (isNaN(reviewId) || !isIdExists(reviews, reviewId))
+      throw new Error();
 
-  if (!isReviewExists) {
-    res.status(400).send(constructResponse("Failed"));
-    return;
+    res.status(200).send(constructResponse("Success"));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
   }
-
-  res.status(200).send(constructResponse("Success"));
 };
 
 export const editReview = (request: Request, res: Response): void => {
-  const id = +request.params.id;
-  const newReview: Review = request.body;
+  try {
+    const reviewId = +request.params.id;
+    const newReview: Review = request.body;
 
-  if (newReview.title === "" || newReview.date === "") {
-    res.status(400).send(constructResponse("Failed"));
-    return;
+    if (isNaN(reviewId) || !isIdExists(reviews, reviewId) || isBodyEmpty(request) || newReview.title === "" || newReview.date === "")
+      throw new Error();
+
+    res.status(200).send(constructResponse("Success", newReview));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
   }
-
-  res.status(200).send(constructResponse("Success"));
 };
 
 export const getReviews = (_request: Request, res: Response): void => {
-  res.status(200).send(constructResponse("Success", reviews));
+  try {
+    
+    res.status(200).send(constructResponse("Success", reviews));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
 };
 
 export const getReview = (request: Request, res: Response): void => {
-  const itemId = +request.params.id;
+  try {
+    const reviewId = +request.params.id;
 
-  res.status(200).send(constructResponse("Success"));
+    if (isNaN(reviewId) || !isIdExists(reviews, reviewId))
+      throw new Error();
+
+    const review = reviews.find(review => review.id === reviewId);
+
+    res.status(200).send(constructResponse("Success", review));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
 };
 
 export const getItemRating = (request: Request, res: Response): void => {
-  const itemId = +request.params.id;
+  try {
+    const itemId = +request.params.id;
 
-  // const rating = reviews.map(review => itemId === review.itemId && )
+    if (isNaN(itemId) || !isIdExists(items, itemId))
+      throw new Error();
 
-  res.status(200).send(constructResponse("Success"));
+    res.status(200).send(constructResponse("Success"));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
 };
   

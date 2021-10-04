@@ -1,23 +1,27 @@
 import { Request, Response } from "express";
 import { items, chart } from "../data";
-import { constructResponse } from "../interfaces";
-
-export interface ChartItem {
-  id: number;
-  count: number
-}
+import { constructResponse, isIdExists, sendFailResponse } from "../util";
 
 export const getAllItemsInChart = (_request: Request, res: Response): void => {
-  res.status(200).send(constructResponse("Success", chart));
+  try {
+
+    res.status(200).send(constructResponse("Success", chart));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
 };
 
 export const addItemToChart = (request: Request, res: Response): void => {
-  const id = +request.params.id;
-  const item = items.find(item => item.id === id);
-  
-  // TODO: immutability when finished!
-  chart.some(chartItem => item.id === chartItem.id) ? chart.find(chartItem => item.id === chartItem.id) :
-    chart.push({id: item.id, count: 1});
+  try {
+    const itemId = +request.params.id;
 
-  item ? res.status(200).send(constructResponse("Success")) : res.status(404).send(constructResponse("Failed"));
+    if (isNaN(itemId) || !isIdExists(items, itemId))
+      throw new Error();
+
+    res.status(200).send(constructResponse("Success"));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
 };

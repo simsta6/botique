@@ -1,28 +1,46 @@
 import { Request, Response } from "express";
 import { items } from "../data";
-import { constructResponse } from "../interfaces";
-
-export interface Item {
-  id: number;
-  label: string;
-  color: string;
-}
+import { constructResponse, isIdExists, sendFailResponse } from "../util";
 
 export const getAllItems = (_request: Request, res: Response): void => {
-  res.status(200).send(constructResponse("Success", items));
+  try {
+
+    res.status(200).send(constructResponse("Success", items));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
 };
 
 export const getItem = (request: Request, res: Response): void => {
-  const id = +request.params.id;
-  const item = items.find(item => item.id === id);
-  
-  item ? res.status(200).send(constructResponse("Success", item)) : res.status(404).send(constructResponse("Failed"));
+  try {
+    const itemId = +request.params.id;
+
+    if (isNaN(itemId) || !isIdExists(items, itemId))
+      throw new Error();
+
+    const item = items.find(item => item.id === itemId);
+
+    res.status(200).send(constructResponse("Success", item));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
 };
 
 export const getFiltratedItems = (request: Request, res: Response): void => {
-  const color = request.params.color;
-  const filtratedItems = items.filter(item => item.color.toLowerCase() === color.toLowerCase());
+  try {
+    const color = request.params.color;
+    
+    if (!color)
+      throw new Error();
+    
+    const filtratedItems = items.filter(item => item.color.toLowerCase() === color.toLowerCase());
 
-  res.status(200).send(constructResponse("Success", filtratedItems.length ? filtratedItems : {}));
+    res.status(200).send(constructResponse("Success", filtratedItems));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
 };
 

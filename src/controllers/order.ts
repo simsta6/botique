@@ -1,20 +1,18 @@
 import { Request, Response } from "express";
 import { chart } from "../data";
-import { ChartItem } from "./chart";
-import { constructResponse } from "../interfaces";
-
-export type orderState = "pending" | "paid" | "approved" | "finished" | "canceled";
-
-export interface Order {
-  id: number;
-  address: string;
-  items: ChartItem[];
-  sellerId: number;
-  state: orderState;
-}
+import { constructResponse, sendFailResponse } from "../util";
 
 export const makeAnOrder = (request: Request, res: Response): void => {
-  const isValidAddress = true;
+  try {
 
-  chart.length && isValidAddress ? res.status(200).send(constructResponse("Success")) : res.status(404).send(constructResponse("Failed"));
+    const isValidAddress = true;
+
+    if (!chart.length || !isValidAddress)
+      throw new Error();
+
+    res.status(200).send(constructResponse("Success"));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
 };

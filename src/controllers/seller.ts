@@ -1,91 +1,94 @@
 import { Request, Response } from "express";
-import { Item } from "./item";
-import { items, itemsWaitingForApproval, orders } from "../data";
-import { orderState } from "./order";
-import { User } from "./user";
-import { constructResponse } from "../interfaces";
+import { orderState } from "../interfaces";
+import { items, orders } from "../data";
+import { constructResponse, isBodyEmpty, isIdExists, sendFailResponse } from "../util";
 
 interface newItem {
   label: string;
   color: string;
 }
 
-export interface Seller extends User {
-  shopName: string,
-  rating: number
-}
-
 interface Shop {
-  address: string,
-  workingHours: string
+  address: string;
+  workingHours: string;
 }
 
 
 export const addItem = (request: Request, res: Response): void => {
-  const item: newItem = request.body;
+  try {
+    const item: newItem = request.body;
 
-  if (item.label === "" || item.color === "") {
-    res.status(400).send(constructResponse("Failed"));
-    return;
+    if (isBodyEmpty(request) || item.label === "" || item.color === "")
+      throw new Error();
+
+    res.status(200).send(constructResponse("Success", item));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
   }
-
-  const lastIndex = Math.max(itemsWaitingForApproval.at(-1).id, items.at(-1).id);
-  const addedItem: Item = {...item, id: lastIndex + 1};
-  items.push(addedItem);
-  res.status(200).send(constructResponse("Success", addedItem));
 };
 
 export const deleteItem = (request: Request, res: Response): void => {
-  const id = +request.params.id;
+  try {
+    const itemId = +request.params.id;
 
-  const isItemExists = items.some(item => item.id === id);
+    if (isNaN(itemId) || !isIdExists(items, itemId))
+      throw new Error();
 
-  if (!isItemExists) {
-    res.status(400).send(constructResponse("Failed"));
-    return;
+    res.status(200).send(constructResponse("Success"));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
   }
-
-  res.status(200).send(constructResponse("Success"));
 };
 
 export const editItem = (request: Request, res: Response): void => {
-  const id = +request.params.id;
-  const newItem: newItem = request.body;
-  const oldItem = items.find(item => item.id === id);
+  try {
+    const itemId = +request.params.id;
+    const newItem: newItem = request.body;
+    
+    if (isNaN(itemId) || !isIdExists(items, itemId) || isBodyEmpty(request) || newItem.label === "" || newItem.color === "")
+      throw new Error();
+    
+    const newItemWithId = {...newItem, id: itemId};
+    items.map(item => item.id === itemId && newItemWithId);
 
-  if (newItem.label === "" || newItem.color === "" || !oldItem) {
-    res.status(400).send(constructResponse("Failed"));
-    return;
+    res.status(200).send(constructResponse("Success", newItemWithId));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
   }
-  const newItemWithId = {...newItem, id: id};
-
-  items.map(item => item.id === id && newItemWithId);
-  res.status(200).send(constructResponse("Success", newItemWithId));
 };
 
-export const changeOrderState = (request: Request, res: Response): void => {
-  const orderId = +request.params.id;
-  const order = orders.find(x => x.id === orderId);
-  const newOrderState: orderState = request.body;
+export const changeOrderState = (request: Request, res: Response): void => { 
+  try {
+    const orderId = +request.params.id;
+    
+    if (isNaN(orderId) || !isIdExists(orders, orderId) || isBodyEmpty(request))
+      throw new Error();
+    
+    const newOrderState: orderState = request.body;
 
-  if (!order) {
-    res.status(400).send(constructResponse("Failed"));
-    return;
+    orders.forEach(x => x.id === orderId && (x.state = newOrderState));
+
+    res.status(200).send(constructResponse("Success"));
+
+  } catch (error) {
+    sendFailResponse(res, error.message);
   }
-
-  orders.forEach(x => x.id === orderId && (x.state = newOrderState));
-
-  res.status(200).send(constructResponse("Success"));
 };
 
 export const addShop = (request: Request, res: Response): void => {
-  const shop: Shop = request.body;
+  try {
+    const shop: Shop = request.body;
 
-  if (shop.address === "" || shop.workingHours === "") {
-    res.status(400).send(constructResponse("Failed"));
-    return;
+    if (isBodyEmpty(request) || shop.address === "" || shop.workingHours === "")
+      throw new Error();
+
+    res.status(200).send(constructResponse("Success", shop));
+
+  } catch (error) {
+    sendFailResponse(res, error.message);
   }
-
-  res.status(200).send(constructResponse("Success"));
 };
   

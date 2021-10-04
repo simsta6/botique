@@ -1,19 +1,35 @@
+import { sellers, users } from "./../data";
 import { Request, Response } from "express";
-import { Seller } from "./seller";
-import { constructResponse } from "../interfaces";
+import { isBodyEmpty, constructResponse, sendFailResponse, isIdExists } from "../util";
+import { Seller } from "../interfaces";
 
 export const addSeller = (request: Request, res: Response): void => {
-  const newSeller: Seller = request.body;
+  try {
+    const userId = +request.params.id;
 
-  const created = true;
+    if (isNaN(userId) || !isIdExists(users, userId) || isBodyEmpty(request))
+      throw new Error();
 
-  created ? res.status(200).send(constructResponse("Success")) : res.status(400).send(constructResponse("Failed"));
+    const newSeller: Seller = request.body;
+    sellers.push(newSeller);
+
+    res.status(200).send(constructResponse("Success"));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
 };
 
 export const deleteUser = (request: Request, res: Response): void => {
-  const userId = +request.params.id;
+  try {
+    const userId = +request.params.id;
 
-  const deleted = true;
+    if (isNaN(userId) || !isIdExists(users, userId))
+      throw new Error();
 
-  deleted ? res.status(200).send(constructResponse("Success")) : res.status(400).send(constructResponse("Failed"));
+    res.status(200).send(constructResponse("Success"));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
 };
