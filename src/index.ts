@@ -8,7 +8,8 @@ import { postReview, deleteReview, editReview, getReview, getReviews, getItemRat
 
 const server = express();
 server.use(json());
-const port = 5000;
+
+const port = process.env.PORT || 5000;
 
 // Item
 server.get("/api/items", getAllItems); //                   ITEM
