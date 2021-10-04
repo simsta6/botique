@@ -3,11 +3,10 @@ import { Request, Response } from "express";
 import { isBodyEmpty, constructResponse, sendFailResponse, isIdExists } from "../util";
 import { Seller } from "../interfaces";
 
-export const addSeller = (request: Request, res: Response): void => {
+export const postSeller = (request: Request, res: Response): void => {
   try {
-    const userId = +request.params.id;
 
-    if (isNaN(userId) || !isIdExists(users, userId) || isBodyEmpty(request))
+    if (isBodyEmpty(request))
       throw new Error();
 
     const newSeller: Seller = request.body;

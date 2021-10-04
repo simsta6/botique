@@ -1,3 +1,4 @@
+import { sellers } from "./../data";
 import { Request, Response } from "express";
 import { orderState } from "../interfaces";
 import { items, orders } from "../data";
@@ -8,13 +9,8 @@ interface newItem {
   color: string;
 }
 
-interface Shop {
-  address: string;
-  workingHours: string;
-}
 
-
-export const addItem = (request: Request, res: Response): void => {
+export const postItem = (request: Request, res: Response): void => {
   try {
     const item: newItem = request.body;
 
@@ -78,17 +74,12 @@ export const changeOrderState = (request: Request, res: Response): void => {
   }
 };
 
-export const addShop = (request: Request, res: Response): void => {
+export const getSellers = (_request: Request, res: Response): void => {
   try {
-    const shop: Shop = request.body;
-
-    if (isBodyEmpty(request) || shop.address === "" || shop.workingHours === "")
-      throw new Error();
-
-    res.status(200).send(constructResponse("Success", shop));
-
+    
+    res.status(200).send(constructResponse("Success", sellers));
+    
   } catch (error) {
     sendFailResponse(res, error.message);
   }
 };
-  

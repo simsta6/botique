@@ -3,12 +3,11 @@ import { Review } from "../interfaces";
 import { items, reviews } from "../data";
 import { constructResponse, isBodyEmpty, isIdExists, sendFailResponse } from "../util";
 
-export const addReview = (request: Request, res: Response): void => {
+export const postReview = (request: Request, res: Response): void => {
   try {
-    const reviewId = +request.params.id;
     const newReview: Review = request.body;
 
-    if (isNaN(reviewId) || !isIdExists(reviews, reviewId) || isBodyEmpty(request) || newReview.title === "" || newReview.date === "")
+    if (isBodyEmpty(request) || newReview.title === "" || newReview.date === "")
       throw new Error();
 
     res.status(200).send(constructResponse("Success", newReview));
