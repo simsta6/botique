@@ -17,7 +17,7 @@ export const postItem = (request: Request, res: Response): void => {
     if (isBodyEmpty(request) || item.label === "" || item.color === "")
       throw new Error();
 
-    res.status(200).send(constructResponse("Success", item));
+    res.status(201).send(constructResponse("Success", item));
     
   } catch (error) {
     sendFailResponse(res, error.message);

@@ -12,7 +12,7 @@ export const postSeller = (request: Request, res: Response): void => {
     const newSeller: Seller = request.body;
     sellers.push(newSeller);
 
-    res.status(200).send(constructResponse("Success"));
+    res.status(201).send(constructResponse("Success"));
     
   } catch (error) {
     sendFailResponse(res, error.message);
