@@ -33,7 +33,7 @@ export const getItem = (request: Request, res: Response): void => {
   }
 };
 
-export const getFiltratedItems = (request: Request, res: Response): void => {
+export const getItemsByColor = (request: Request, res: Response): void => {
   try {
     const color = request.params.color;
     
