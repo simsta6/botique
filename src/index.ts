@@ -43,9 +43,6 @@ server.delete("/api/items/reviews/:id", deleteReview); //                       
 server.patch("/api/items/reviews/:id", editReview); //                                     REVIEW
 server.get("/api/items/items/:id/reviews", getItemRating); //                                REVIEW
 
-// TODO: items/reviews perdaryt
-// Grazint 404 kai nera id
 // kai sukuria grazint 201
-// 400 grazint kai blogai kuriamas, blogi parametrai, kai blogi parametru tipai (string kur int ir pan)
 
 server.listen(port, () => console.log(`Running on port ${port}`));
