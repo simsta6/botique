@@ -36,12 +36,12 @@ server.delete("/api/items/:id", deleteItem); //                                 
 
 
 // Reviews
-server.post("/api/reviews", postReview); //                                            REVIEW
-server.get("/api/reviews", getReviews); //                                  REVIEW
-server.get("/api/reviews/:id", getReview); //       
-server.delete("/api/reviews/:id", deleteReview); //                                REVIEW  
-server.patch("/api/reviews/:id", editReview); //                                     REVIEW
-server.get("/api/items/:id/reviews", getItemRating); //                                REVIEW
+server.post("/api/items/reviews", postReview); //                                            REVIEW
+server.get("/api/items/reviews", getReviews); //                                  REVIEW
+server.get("/api/items/reviews/:id", getReview); //       
+server.delete("/api/items/reviews/:id", deleteReview); //                                REVIEW  
+server.patch("/api/items/reviews/:id", editReview); //                                     REVIEW
+server.get("/api/items/items/:id/reviews", getItemRating); //                                REVIEW
 
 // TODO: items/reviews perdaryt
 // Grazint 404 kai nera id
