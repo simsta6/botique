@@ -1,6 +1,6 @@
 import { sellers, users } from "./../data";
 import { Request, Response } from "express";
-import { isBodyEmpty, constructResponse, sendFailResponse, isIdExists } from "../util";
+import { isBodyEmpty, constructResponse, sendFailResponse, isIdExists, idDoesNotExist } from "../util";
 import { Seller } from "../interfaces";
 
 export const postSeller = (request: Request, res: Response): void => {
@@ -23,7 +23,12 @@ export const deleteUser = (request: Request, res: Response): void => {
   try {
     const userId = +request.params.id;
 
-    if (isNaN(userId) || !isIdExists(users, userId))
+    if (!isIdExists(users, userId)) {
+      idDoesNotExist(res);
+      return;
+    }
+
+    if (isNaN(userId))
       throw new Error();
 
     res.status(200).send(constructResponse("Success"));

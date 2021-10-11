@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { items } from "../data";
-import { constructResponse, isIdExists, sendFailResponse } from "../util";
+import { constructResponse, idDoesNotExist, isIdExists, sendFailResponse } from "../util";
 
 export const getAllItems = (_request: Request, res: Response): void => {
   try {
@@ -16,7 +16,12 @@ export const getItem = (request: Request, res: Response): void => {
   try {
     const itemId = +request.params.id;
 
-    if (isNaN(itemId) || !isIdExists(items, itemId))
+    if (!isIdExists(items, itemId)) {
+      idDoesNotExist(res);
+      return;
+    }
+
+    if (isNaN(itemId))
       throw new Error();
 
     const item = items.find(item => item.id === itemId);

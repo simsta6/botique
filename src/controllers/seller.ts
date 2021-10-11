@@ -2,7 +2,7 @@ import { sellers } from "./../data";
 import { Request, Response } from "express";
 import { orderState } from "../interfaces";
 import { items, orders } from "../data";
-import { constructResponse, isBodyEmpty, isIdExists, sendFailResponse } from "../util";
+import { constructResponse, idDoesNotExist, isBodyEmpty, isIdExists, sendFailResponse } from "../util";
 
 interface newItem {
   label: string;
@@ -28,7 +28,12 @@ export const deleteItem = (request: Request, res: Response): void => {
   try {
     const itemId = +request.params.id;
 
-    if (isNaN(itemId) || !isIdExists(items, itemId))
+    if (!isIdExists(items, itemId)) {
+      idDoesNotExist(res);
+      return;
+    }
+
+    if (isNaN(itemId))
       throw new Error();
 
     res.status(200).send(constructResponse("Success"));
@@ -42,8 +47,13 @@ export const editItem = (request: Request, res: Response): void => {
   try {
     const itemId = +request.params.id;
     const newItem: newItem = request.body;
+
+    if (!isIdExists(items, itemId)) {
+      idDoesNotExist(res);
+      return;
+    }
     
-    if (isNaN(itemId) || !isIdExists(items, itemId) || isBodyEmpty(request) || newItem.label === "" || newItem.color === "")
+    if (isNaN(itemId) || isBodyEmpty(request) || newItem.label === "" || newItem.color === "")
       throw new Error();
     
     const newItemWithId = {...newItem, id: itemId};
@@ -59,8 +69,13 @@ export const editItem = (request: Request, res: Response): void => {
 export const changeOrderState = (request: Request, res: Response): void => { 
   try {
     const orderId = +request.params.id;
+
+    if (!isIdExists(orders, orderId)) {
+      idDoesNotExist(res);
+      return;
+    }
     
-    if (isNaN(orderId) || !isIdExists(orders, orderId) || isBodyEmpty(request))
+    if (isNaN(orderId) || isBodyEmpty(request))
       throw new Error();
     
     const newOrderState: orderState = request.body;

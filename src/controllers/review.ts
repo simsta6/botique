@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Review } from "../interfaces";
-import { items, reviews } from "../data";
-import { constructResponse, isBodyEmpty, isIdExists, sendFailResponse } from "../util";
+import { reviews } from "../data";
+import { constructResponse, idDoesNotExist, isBodyEmpty, isIdExists, sendFailResponse } from "../util";
 
 export const postReview = (request: Request, res: Response): void => {
   try {
@@ -10,7 +10,7 @@ export const postReview = (request: Request, res: Response): void => {
     if (isBodyEmpty(request) || newReview.title === "" || newReview.date === "")
       throw new Error();
 
-    res.status(200).send(constructResponse("Success", newReview));
+    res.status(201).send(constructResponse("Success", newReview));
     
   } catch (error) {
     sendFailResponse(res, error.message);
@@ -21,7 +21,12 @@ export const deleteReview = (request: Request, res: Response): void => {
   try {
     const reviewId = +request.params.id;
 
-    if (isNaN(reviewId) || !isIdExists(reviews, reviewId))
+    if (!isIdExists(reviews, reviewId)) {
+      idDoesNotExist(res);
+      return;
+    }
+
+    if (isNaN(reviewId))
       throw new Error();
 
     res.status(200).send(constructResponse("Success"));
@@ -36,7 +41,12 @@ export const editReview = (request: Request, res: Response): void => {
     const reviewId = +request.params.id;
     const newReview: Review = request.body;
 
-    if (isNaN(reviewId) || !isIdExists(reviews, reviewId) || isBodyEmpty(request) || newReview.title === "" || newReview.date === "")
+    if (!isIdExists(reviews, reviewId)) {
+      idDoesNotExist(res);
+      return;
+    }
+
+    if (isNaN(reviewId) || isBodyEmpty(request) || newReview.title === "" || newReview.date === "")
       throw new Error();
 
     res.status(200).send(constructResponse("Success", newReview));
@@ -60,7 +70,12 @@ export const getReview = (request: Request, res: Response): void => {
   try {
     const reviewId = +request.params.id;
 
-    if (isNaN(reviewId) || !isIdExists(reviews, reviewId))
+    if (!isIdExists(reviews, reviewId)) {
+      idDoesNotExist(res);
+      return;
+    }
+
+    if (isNaN(reviewId))
       throw new Error();
 
     const review = reviews.find(review => review.id === reviewId);
@@ -76,7 +91,12 @@ export const getItemRating = (request: Request, res: Response): void => {
   try {
     const itemId = +request.params.id;
 
-    if (isNaN(itemId) || !isIdExists(items, itemId))
+    if (!isIdExists(reviews, itemId)) {
+      idDoesNotExist(res);
+      return;
+    }
+
+    if (isNaN(itemId))
       throw new Error();
 
     res.status(200).send(constructResponse("Success"));
