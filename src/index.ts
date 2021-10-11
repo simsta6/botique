@@ -39,7 +39,7 @@ server.get("/api/items/reviews", getReviews); //                                
 server.get("/api/items/reviews/:id", getReview); //                                 REVIEW
 server.delete("/api/items/reviews/:id", deleteReview); //                           REVIEW  
 server.patch("/api/items/reviews/:id", editReview); //                              REVIEW
-server.get("/api/items/items/:id/reviews", getItemRating); //                       REVIEW
+server.get("/api/items/:id/reviews", getItemRating); //                       REVIEW
 
 
 server.listen(port, () => console.log(`Running on port ${port}`));
