@@ -5,6 +5,7 @@ import { postItem, editItem, changeOrderState, deleteItem, getSellers } from "./
 import { changeUserInfo } from "./controllers/user";
 import { postSeller, deleteUser } from "./controllers/admin";
 import { postReview, deleteReview, editReview, getReview, getReviews } from "./controllers/review";
+import { sendFailResponse } from "./util";
 
 const server = express();
 server.use(json());
@@ -40,5 +41,7 @@ server.get("/api/items/:id/reviews/:reviewId", getReview); //                   
 server.delete("/api/items/:id/reviews/:reviewId", deleteReview); //                 REVIEW  
 server.patch("/api/items/:id/reviews/:reviewId", editReview); //                    REVIEW
 
+
+server.use((_req, res) => sendFailResponse(res, 404));
 
 server.listen(port, () => console.log(`Running on port ${port}`));
