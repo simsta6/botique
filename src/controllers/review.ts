@@ -6,6 +6,12 @@ import { constructResponse, idDoesNotExist, isBodyEmpty, isIdExists, sendFailRes
 export const postReview = (request: Request, res: Response): void => {
   try {
     const newReview: Review = request.body;
+    const itemId = +request.params.id;
+
+    if (!isIdExists(reviews, itemId)) {
+      idDoesNotExist(res);
+      return;
+    }
 
     if (isBodyEmpty(request) || newReview.title === "" || newReview.date === "")
       throw new Error();
@@ -19,9 +25,10 @@ export const postReview = (request: Request, res: Response): void => {
 
 export const deleteReview = (request: Request, res: Response): void => {
   try {
-    const reviewId = +request.params.id;
+    const itemId = +request.params.id;
+    const reviewId = +request.params.reviewId;
 
-    if (!isIdExists(reviews, reviewId)) {
+    if (!isIdExists(reviews, reviewId) || !isIdExists(reviews, itemId)) {
       idDoesNotExist(res);
       return;
     }
@@ -38,10 +45,11 @@ export const deleteReview = (request: Request, res: Response): void => {
 
 export const editReview = (request: Request, res: Response): void => {
   try {
-    const reviewId = +request.params.id;
+    const itemId = +request.params.id;
+    const reviewId = +request.params.reviewId;
     const newReview: Review = request.body;
 
-    if (!isIdExists(reviews, reviewId)) {
+    if (!isIdExists(reviews, reviewId) || !isIdExists(reviews, itemId)) {
       idDoesNotExist(res);
       return;
     }
@@ -56,8 +64,15 @@ export const editReview = (request: Request, res: Response): void => {
   }
 };
 
-export const getReviews = (_request: Request, res: Response): void => {
+export const getReviews = (request: Request, res: Response): void => {
   try {
+
+    const itemId = +request.params.id;
+
+    if (!isIdExists(reviews, itemId)) {
+      idDoesNotExist(res);
+      return;
+    }
     
     res.status(200).send(constructResponse("Success", reviews));
     
@@ -68,9 +83,10 @@ export const getReviews = (_request: Request, res: Response): void => {
 
 export const getReview = (request: Request, res: Response): void => {
   try {
-    const reviewId = +request.params.id;
+    const itemId = +request.params.id;
+    const reviewId = +request.params.reviewId;
 
-    if (!isIdExists(reviews, reviewId)) {
+    if (!isIdExists(reviews, reviewId) || !isIdExists(reviews, itemId)) {
       idDoesNotExist(res);
       return;
     }
@@ -86,23 +102,3 @@ export const getReview = (request: Request, res: Response): void => {
     sendFailResponse(res, error.message);
   }
 };
-
-export const getItemRating = (request: Request, res: Response): void => {
-  try {
-    const itemId = +request.params.id;
-
-    if (!isIdExists(reviews, itemId)) {
-      idDoesNotExist(res);
-      return;
-    }
-
-    if (isNaN(itemId))
-      throw new Error();
-
-    res.status(200).send(constructResponse("Success"));
-    
-  } catch (error) {
-    sendFailResponse(res, error.message);
-  }
-};
-  

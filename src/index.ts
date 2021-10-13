@@ -4,7 +4,7 @@ import { getAllItemsInChart, addItemToChart } from "./controllers/chart";
 import { postItem, editItem, changeOrderState, deleteItem, getSellers } from "./controllers/seller";
 import { changeUserInfo } from "./controllers/user";
 import { postSeller, deleteUser } from "./controllers/admin";
-import { postReview, deleteReview, editReview, getReview, getReviews, getItemRating } from "./controllers/review";
+import { postReview, deleteReview, editReview, getReview, getReviews } from "./controllers/review";
 
 const server = express();
 server.use(json());
@@ -34,12 +34,11 @@ server.patch("/api/orders/:id", changeOrderState); //                           
 server.delete("/api/items/:id", deleteItem); //                                     SELLER
 
 // Reviews
-server.post("/api/items/reviews", postReview); //                                   REVIEW
-server.get("/api/items/reviews", getReviews); //                                    REVIEW
-server.get("/api/items/reviews/:id", getReview); //                                 REVIEW
-server.delete("/api/items/reviews/:id", deleteReview); //                           REVIEW  
-server.patch("/api/items/reviews/:id", editReview); //                              REVIEW
-server.get("/api/items/:id/reviews", getItemRating); //                       REVIEW
+server.post("/api/items/:id/reviews", postReview); //                               REVIEW
+server.get("/api/items/:id/reviews", getReviews); //                                REVIEW
+server.get("/api/items/:id/reviews/:reviewId", getReview); //                       REVIEW
+server.delete("/api/items/:id/reviews/:reviewId", deleteReview); //                 REVIEW  
+server.patch("/api/items/:id/reviews/:reviewId", editReview); //                    REVIEW
 
 
 server.listen(port, () => console.log(`Running on port ${port}`));
