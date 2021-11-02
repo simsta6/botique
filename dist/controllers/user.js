@@ -6,7 +6,11 @@ const util_1 = require("../util");
 const changeUserInfo = (request, res) => {
     try {
         const userId = +request.params.id;
-        if (isNaN(userId) || !(0, util_1.isIdExists)(data_1.users, userId) || (0, util_1.isBodyEmpty)(request))
+        if (!(0, util_1.isIdExists)(data_1.users, userId)) {
+            (0, util_1.idDoesNotExist)(res);
+            return;
+        }
+        if (isNaN(userId) || (0, util_1.isBodyEmpty)(request))
             throw new Error();
         res.status(200).send((0, util_1.constructResponse)("Success"));
     }

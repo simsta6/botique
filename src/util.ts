@@ -11,8 +11,9 @@ export const constructResponse = (status: "Success" | "Failed", data?: unknown):
 export const isBodyEmpty = (request: Request): boolean => 
   request.body.constructor === Object && Object.keys(request.body).length === 0;
 
-export const sendFailResponse = (res: Response, statusCode = 400, message?: string): void => 
+export const sendFailResponse = (res: Response, statusCode = 400, message?: string): void => {
   void res.status(statusCode).send(constructResponse("Failed", message));
+};
 
 export const isIdExists = (data: AnyTypeOfArray[], id: number): boolean => data.some(x => x.id === id);
 

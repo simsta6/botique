@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFiltratedItems = exports.getItem = exports.getAllItems = void 0;
+exports.getItemsByColor = exports.getItem = exports.getAllItems = void 0;
 const data_1 = require("../data");
 const util_1 = require("../util");
 const getAllItems = (_request, res) => {
@@ -15,7 +15,11 @@ exports.getAllItems = getAllItems;
 const getItem = (request, res) => {
     try {
         const itemId = +request.params.id;
-        if (isNaN(itemId) || !(0, util_1.isIdExists)(data_1.items, itemId))
+        if (!(0, util_1.isIdExists)(data_1.items, itemId)) {
+            (0, util_1.idDoesNotExist)(res);
+            return;
+        }
+        if (isNaN(itemId))
             throw new Error();
         const item = data_1.items.find(item => item.id === itemId);
         res.status(200).send((0, util_1.constructResponse)("Success", item));
@@ -25,7 +29,7 @@ const getItem = (request, res) => {
     }
 };
 exports.getItem = getItem;
-const getFiltratedItems = (request, res) => {
+const getItemsByColor = (request, res) => {
     try {
         const color = request.params.color;
         if (!color)
@@ -37,5 +41,5 @@ const getFiltratedItems = (request, res) => {
         (0, util_1.sendFailResponse)(res, error.message);
     }
 };
-exports.getFiltratedItems = getFiltratedItems;
+exports.getItemsByColor = getItemsByColor;
 //# sourceMappingURL=item.js.map

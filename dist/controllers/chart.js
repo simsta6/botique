@@ -15,7 +15,11 @@ exports.getAllItemsInChart = getAllItemsInChart;
 const addItemToChart = (request, res) => {
     try {
         const itemId = +request.params.id;
-        if (isNaN(itemId) || !(0, util_1.isIdExists)(data_1.items, itemId))
+        if (!(0, util_1.isIdExists)(data_1.items, itemId)) {
+            (0, util_1.idDoesNotExist)(res);
+            return;
+        }
+        if (isNaN(itemId))
             throw new Error();
         res.status(200).send((0, util_1.constructResponse)("Success"));
     }

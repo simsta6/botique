@@ -9,7 +9,7 @@ const postSeller = (request, res) => {
             throw new Error();
         const newSeller = request.body;
         data_1.sellers.push(newSeller);
-        res.status(200).send((0, util_1.constructResponse)("Success"));
+        res.status(201).send((0, util_1.constructResponse)("Success"));
     }
     catch (error) {
         (0, util_1.sendFailResponse)(res, error.message);
@@ -19,7 +19,11 @@ exports.postSeller = postSeller;
 const deleteUser = (request, res) => {
     try {
         const userId = +request.params.id;
-        if (isNaN(userId) || !(0, util_1.isIdExists)(data_1.users, userId))
+        if (!(0, util_1.isIdExists)(data_1.users, userId)) {
+            (0, util_1.idDoesNotExist)(res);
+            return;
+        }
+        if (isNaN(userId))
             throw new Error();
         res.status(200).send((0, util_1.constructResponse)("Success"));
     }

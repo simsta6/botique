@@ -9,7 +9,7 @@ const postItem = (request, res) => {
         const item = request.body;
         if ((0, util_1.isBodyEmpty)(request) || item.label === "" || item.color === "")
             throw new Error();
-        res.status(200).send((0, util_1.constructResponse)("Success", item));
+        res.status(201).send((0, util_1.constructResponse)("Success", item));
     }
     catch (error) {
         (0, util_1.sendFailResponse)(res, error.message);
@@ -19,7 +19,11 @@ exports.postItem = postItem;
 const deleteItem = (request, res) => {
     try {
         const itemId = +request.params.id;
-        if (isNaN(itemId) || !(0, util_1.isIdExists)(data_2.items, itemId))
+        if (!(0, util_1.isIdExists)(data_2.items, itemId)) {
+            (0, util_1.idDoesNotExist)(res);
+            return;
+        }
+        if (isNaN(itemId))
             throw new Error();
         res.status(200).send((0, util_1.constructResponse)("Success"));
     }
@@ -32,7 +36,11 @@ const editItem = (request, res) => {
     try {
         const itemId = +request.params.id;
         const newItem = request.body;
-        if (isNaN(itemId) || !(0, util_1.isIdExists)(data_2.items, itemId) || (0, util_1.isBodyEmpty)(request) || newItem.label === "" || newItem.color === "")
+        if (!(0, util_1.isIdExists)(data_2.items, itemId)) {
+            (0, util_1.idDoesNotExist)(res);
+            return;
+        }
+        if (isNaN(itemId) || (0, util_1.isBodyEmpty)(request) || newItem.label === "" || newItem.color === "")
             throw new Error();
         const newItemWithId = Object.assign(Object.assign({}, newItem), { id: itemId });
         data_2.items.map(item => item.id === itemId && newItemWithId);
@@ -46,7 +54,11 @@ exports.editItem = editItem;
 const changeOrderState = (request, res) => {
     try {
         const orderId = +request.params.id;
-        if (isNaN(orderId) || !(0, util_1.isIdExists)(data_2.orders, orderId) || (0, util_1.isBodyEmpty)(request))
+        if (!(0, util_1.isIdExists)(data_2.orders, orderId)) {
+            (0, util_1.idDoesNotExist)(res);
+            return;
+        }
+        if (isNaN(orderId) || (0, util_1.isBodyEmpty)(request))
             throw new Error();
         const newOrderState = request.body;
         data_2.orders.forEach(x => x.id === orderId && (x.state = newOrderState));

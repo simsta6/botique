@@ -1,16 +1,21 @@
 import express, { json } from "express";
-import { getAllItems, getItemsByColor, getItem } from "./controllers/item";
-import { getAllItemsInChart, addItemToChart } from "./controllers/chart";
-import { postItem, editItem, changeOrderState, deleteItem, getSellers } from "./controllers/seller";
-import { changeUserInfo } from "./controllers/user";
-import { postSeller, deleteUser } from "./controllers/admin";
-import { postReview, deleteReview, editReview, getReview, getReviews } from "./controllers/review";
+import { connect } from "./config/database";
+import { deleteUser, postSeller } from "./controllers/admin";
+import { addItemToChart, getAllItemsInChart } from "./controllers/chart";
+import { getAllItems, getItem, getItemsByColor } from "./controllers/item";
+import { deleteReview, editReview, getReview, getReviews, postReview } from "./controllers/review";
+import { changeOrderState, deleteItem, editItem, getSellers, postItem } from "./controllers/seller";
+import { changeUserInfo, login, register } from "./controllers/user";
 import { sendFailResponse } from "./util";
 
+connect();
 const server = express();
 server.use(json());
 
 const port = process.env.PORT || 5000;
+
+server.post("/api/register", register);
+server.post("api/login", login);
 
 // Item
 server.get("/api/items", getAllItems); //                                           ITEM

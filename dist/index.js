@@ -18,44 +18,54 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importStar(require("express"));
-const item_1 = require("./controllers/item");
+const mongoose_1 = __importDefault(require("mongoose"));
+const connections_1 = require("./connections");
+const admin_1 = require("./controllers/admin");
 const chart_1 = require("./controllers/chart");
-const order_1 = require("./controllers/order");
+const item_1 = require("./controllers/item");
+const review_1 = require("./controllers/review");
 const seller_1 = require("./controllers/seller");
 const user_1 = require("./controllers/user");
-const admin_1 = require("./controllers/admin");
-const review_1 = require("./controllers/review");
+const util_1 = require("./util");
 const server = (0, express_1.default)();
 server.use((0, express_1.json)());
-const port = 5000;
+const port = process.env.PORT || 5000;
+(0, connections_1.connect)();
+const User = mongoose_1.default.model("User", new mongoose_1.default.Schema({
+    email: String
+}));
+User.create([{
+        email: "Simas",
+    }]);
 // Item
-server.get("/api/items", item_1.getAllItems); // Perziureti prekes                     ITEM
-server.get("/api/items/:id", item_1.getItem); // Perziureti preke                      ITEM
-server.get("/api/items/filtrate/:color", item_1.getFiltratedItems); // Filtruoti prekes         ITEM
+server.get("/api/items", item_1.getAllItems); //                                           ITEM
+server.get("/api/items/:id", item_1.getItem); //                                           ITEM
+server.get("/api/items/:color", item_1.getItemsByColor); //                                ITEM
 // Chart
-server.get("/api/charts", chart_1.getAllItemsInChart); // Paziureti krepseli             ITEM
-server.post("/api/charts/:id", chart_1.addItemToChart); //Prideti preke i krepseli   ITEM
-// Order
-server.post("/api/orders", order_1.makeAnOrder); // Atlikti uzsakyma                ORDER
+server.get("/api/charts", chart_1.getAllItemsInChart); //                                   ITEM 
+server.post("/api/charts/:id", chart_1.addItemToChart); //                                  ITEM
 // User
-server.patch("/api/users/:id", user_1.changeUserInfo); //                                      
+server.patch("/api/users/:id", user_1.changeUserInfo); //                                  SELLER    
+server.delete("/api/users/:id", admin_1.deleteUser); //                                     SELLER      
 // Admin
-server.post("/api/sellers", admin_1.postSeller); //                                            SELLER
-server.delete("/api/users/:id", admin_1.deleteUser); //           
+server.post("/api/sellers", admin_1.postSeller); //                                         SELLER
 // Seller
-server.get("/api/sellers", seller_1.getSellers); //                                     SELLER
-server.post("/api/items", seller_1.postItem); // Registruoti produkte                            SELLER                    
-server.patch("/api/items/:id", seller_1.editItem); // Modifikuoti produkta                     SELLER
-server.patch("/api/orders/:id", seller_1.changeOrderState); // Keisti uzsakymo bukle,    SELLER
+server.get("/api/sellers", seller_1.getSellers); //                                          SELLER
+server.post("/api/items", seller_1.postItem); //                                             SELLER                    
+server.patch("/api/items/:id", seller_1.editItem); //                                        SELLER
+server.patch("/api/orders/:id", seller_1.changeOrderState); //                               SELLER
 server.delete("/api/items/:id", seller_1.deleteItem); //                                     SELLER
 // Reviews
-server.post("/api/reviews", review_1.postReview); //                                            REVIEW
-server.get("/api/reviews", review_1.getReviews); //                                  REVIEW
-server.get("/api/reviews/:id", review_1.getReview); //       
-server.delete("/api/reviews/:id", review_1.deleteReview); //                                REVIEW  
-server.patch("/api/reviews/:id", review_1.editReview); //                                     REVIEW
-server.get("/api/items/:id/reviews", review_1.getItemRating); //                                REVIEW
+server.post("/api/items/:id/reviews", review_1.postReview); //                               REVIEW
+server.get("/api/items/:id/reviews", review_1.getReviews); //                                REVIEW
+server.get("/api/items/:id/reviews/:reviewId", review_1.getReview); //                       REVIEW
+server.delete("/api/items/:id/reviews/:reviewId", review_1.deleteReview); //                 REVIEW  
+server.patch("/api/items/:id/reviews/:reviewId", review_1.editReview); //                    REVIEW
+server.use((_req, res) => (0, util_1.sendFailResponse)(res, 404));
 server.listen(port, () => console.log(`Running on port ${port}`));
 //# sourceMappingURL=index.js.map
