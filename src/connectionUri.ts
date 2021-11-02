@@ -1,0 +1,1 @@
+export const mongoDBUri = "mongodb+srv://admin:admin@cluster0.bmoxo.mongodb.net/botique?retryWrites=true&w=majority";
