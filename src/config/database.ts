@@ -1,10 +1,7 @@
 import mongoose from "mongoose";
-import { mongoDBUri } from "../connectionUri";
 
 export const connect = (): void => {
-  // Connecting to the database
-  mongoose
-    .connect(mongoDBUri)
+  mongoose.connect(process.env.MONGO_URI)
     .then(() => {
       console.log("Successfully connected to database");
     })

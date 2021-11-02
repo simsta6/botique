@@ -7,6 +7,9 @@ import { deleteReview, editReview, getReview, getReviews, postReview } from "./c
 import { changeOrderState, deleteItem, editItem, getSellers, postItem } from "./controllers/seller";
 import { changeUserInfo, login, register } from "./controllers/user";
 import { sendFailResponse } from "./util";
+import { config } from "dotenv";
+
+config();
 
 connect();
 const server = express();
@@ -15,7 +18,7 @@ server.use(json());
 const port = process.env.PORT || 5000;
 
 server.post("/api/register", register);
-server.post("api/login", login);
+server.post("/api/login", login);
 
 // Item
 server.get("/api/items", getAllItems); //                                           ITEM
