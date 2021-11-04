@@ -29,6 +29,7 @@ const seller_1 = require("./controllers/seller");
 const user_1 = require("./controllers/user");
 const util_1 = require("./util");
 const dotenv_1 = require("dotenv");
+const auth_1 = require("./middleware/auth");
 (0, dotenv_1.config)();
 (0, database_1.connect)();
 const server = (0, express_1.default)();
@@ -39,15 +40,13 @@ server.post("/api/login", user_1.login);
 // Item
 server.get("/api/items", item_1.getAllItems); //                                           ITEM
 server.get("/api/items/:id", item_1.getItem); //                                           ITEM
-server.get("/api/items/:color", item_1.getItemsByColor); //                                ITEM
 // Chart
 server.get("/api/charts", chart_1.getAllItemsInChart); //                                   ITEM 
 server.post("/api/charts/:id", chart_1.addItemToChart); //                                  ITEM
-// User
-server.patch("/api/users/:id", user_1.changeUserInfo); //                                  SELLER    
-server.delete("/api/users/:id", admin_1.deleteUser); //                                     SELLER      
+// User 
+server.delete("/api/users/:id", admin_1.deleteUser); //                                           
 // Admin
-server.post("/api/sellers", admin_1.postSeller); //                                         SELLER
+server.post("/api/sellers", auth_1.verifyToken, admin_1.postSeller); //                            SELLER
 // Seller
 server.get("/api/sellers", seller_1.getSellers); //                                          SELLER
 server.post("/api/items", seller_1.postItem); //                                             SELLER                    

@@ -33,19 +33,3 @@ export const getItem = (request: Request, res: Response): void => {
   }
 };
 
-export const getItemsByColor = (request: Request, res: Response): void => {
-  try {
-    const color = request.params.color;
-    
-    if (!color)
-      throw new Error();
-    
-    const filtratedItems = items.filter(item => item.color.toLowerCase() === color.toLowerCase());
-
-    res.status(200).send(constructResponse("Success", filtratedItems));
-    
-  } catch (error) {
-    sendFailResponse(res, error.message);
-  }
-};
-

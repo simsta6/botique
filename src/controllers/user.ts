@@ -1,28 +1,8 @@
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { userModel } from "../models/user";
-import { constructResponse, idDoesNotExist, isBodyEmpty, isIdExists, sendFailResponse } from "../util";
-import { users } from "./../data";
-
-export const changeUserInfo = (request: Request, res: Response): void => {
-  try {
-    const userId = +request.params.id;
-
-    if (!isIdExists(users, userId)) {
-      idDoesNotExist(res);
-      return;
-    }
-
-    if (isNaN(userId) || isBodyEmpty(request))
-      throw new Error();
-
-    res.status(200).send(constructResponse("Success"));
-    
-  } catch (error) {
-    sendFailResponse(res, error.message);
-  }
-};
+import { User } from "../models/user";
+import { constructResponse, isBodyEmpty, sendFailResponse } from "../util";
 
 export const register = async (request: Request, res: Response): Promise<void> => {
   try {
@@ -36,7 +16,7 @@ export const register = async (request: Request, res: Response): Promise<void> =
       return;
     }
 
-    const oldUser = await userModel.findOne({ email });
+    const oldUser = await User.findOne({ email });
 
     if (oldUser) {
       sendFailResponse(res, 409, "User Already Exist. Please Login");
@@ -45,7 +25,7 @@ export const register = async (request: Request, res: Response): Promise<void> =
 
     const encryptedPassword = await bcrypt.hash(password, 10);
 
-    const user = await userModel.create({
+    const user = await User.create({
       first_name,
       last_name,
       email: email.toLowerCase(),
@@ -53,7 +33,7 @@ export const register = async (request: Request, res: Response): Promise<void> =
     });
     user.token = createToken(user._id, email);
 
-    res.status(201).send(constructResponse("Success"));
+    res.status(201).send(constructResponse("Success", user));
     
   } catch (error) {
     sendFailResponse(res, error.message);
@@ -72,11 +52,12 @@ export const login = async (request: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const user = await userModel.findOne({ email });
+    const user = await User.findOne({ email });
     if (user && (await bcrypt.compare(password, user.password))) {
       user.token = createToken(user._id, email);
 
-      res.status(200).json(user);
+      res.status(200).send(constructResponse("Success", user));
+      return;
     }
     sendFailResponse(res, 400, "Invalid Credentials");
     

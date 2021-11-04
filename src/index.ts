@@ -2,12 +2,13 @@ import express, { json } from "express";
 import { connect } from "./config/database";
 import { deleteUser, postSeller } from "./controllers/admin";
 import { addItemToChart, getAllItemsInChart } from "./controllers/chart";
-import { getAllItems, getItem, getItemsByColor } from "./controllers/item";
+import { getAllItems, getItem } from "./controllers/item";
 import { deleteReview, editReview, getReview, getReviews, postReview } from "./controllers/review";
 import { changeOrderState, deleteItem, editItem, getSellers, postItem } from "./controllers/seller";
-import { changeUserInfo, login, register } from "./controllers/user";
+import { login, register } from "./controllers/user";
 import { sendFailResponse } from "./util";
 import { config } from "dotenv";
+import { verifyToken } from "./middleware/auth";
 
 config();
 
@@ -23,18 +24,16 @@ server.post("/api/login", login);
 // Item
 server.get("/api/items", getAllItems); //                                           ITEM
 server.get("/api/items/:id", getItem); //                                           ITEM
-server.get("/api/items/:color", getItemsByColor); //                                ITEM
 
 // Chart
 server.get("/api/charts", getAllItemsInChart); //                                   ITEM 
 server.post("/api/charts/:id", addItemToChart); //                                  ITEM
 
-// User
-server.patch("/api/users/:id", changeUserInfo); //                                  SELLER    
-server.delete("/api/users/:id", deleteUser); //                                     SELLER      
+// User 
+server.delete("/api/users/:id", deleteUser); //                                           
 
 // Admin
-server.post("/api/sellers", postSeller); //                                         SELLER
+server.post("/api/sellers", verifyToken, postSeller); //                            SELLER
 // Seller
 server.get("/api/sellers", getSellers); //                                          SELLER
 server.post("/api/items", postItem); //                                             SELLER                    
