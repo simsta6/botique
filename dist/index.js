@@ -21,11 +21,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importStar(require("express"));
 const database_1 = require("./config/database");
-const admin_1 = require("./controllers/admin");
 const chart_1 = require("./controllers/chart");
 const item_1 = require("./controllers/item");
 const review_1 = require("./controllers/review");
-const seller_1 = require("./controllers/seller");
 const user_1 = require("./controllers/user");
 const util_1 = require("./util");
 const dotenv_1 = require("dotenv");
@@ -44,15 +42,15 @@ server.get("/api/items/:id", item_1.getItem); //                                
 server.get("/api/charts", chart_1.getAllItemsInChart); //                                   ITEM 
 server.post("/api/charts/:id", chart_1.addItemToChart); //                                  ITEM
 // User 
-server.delete("/api/users/:id", admin_1.deleteUser); //                                           
+server.delete("/api/users/:id", user_1.deleteUser); //                                           
 // Admin
-server.post("/api/sellers", auth_1.verifyToken, admin_1.postSeller); //                            SELLER
+server.post("/api/sellers", auth_1.verifyToken, user_1.postSeller); //                            SELLER
 // Seller
-server.get("/api/sellers", seller_1.getSellers); //                                          SELLER
-server.post("/api/items", seller_1.postItem); //                                             SELLER                    
-server.patch("/api/items/:id", seller_1.editItem); //                                        SELLER
-server.patch("/api/orders/:id", seller_1.changeOrderState); //                               SELLER
-server.delete("/api/items/:id", seller_1.deleteItem); //                                     SELLER
+server.get("/api/sellers", user_1.getSellers); //                                          SELLER
+server.post("/api/items", user_1.postItem); //                                             SELLER                    
+server.patch("/api/items/:id", user_1.editItem); //                                        SELLER
+server.patch("/api/orders/:id", user_1.changeOrderState); //                               SELLER
+server.delete("/api/items/:id", user_1.deleteItem); //                                     SELLER
 // Reviews
 server.post("/api/items/:id/reviews", review_1.postReview); //                               REVIEW
 server.get("/api/items/:id/reviews", review_1.getReviews); //                                REVIEW

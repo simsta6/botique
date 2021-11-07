@@ -1,11 +1,11 @@
 import express, { json } from "express";
 import { connect } from "./config/database";
-import { deleteUser, postSeller } from "./controllers/admin";
 import { addItemToChart, getAllItemsInChart } from "./controllers/chart";
 import { getAllItems, getItem } from "./controllers/item";
 import { deleteReview, editReview, getReview, getReviews, postReview } from "./controllers/review";
-import { changeOrderState, deleteItem, editItem, getSellers, postItem } from "./controllers/seller";
-import { login, register } from "./controllers/user";
+import { 
+  login, register, deleteUser, postSeller, changeOrderState, deleteItem, editItem, getSellers, postItem 
+} from "./controllers/user";
 import { sendFailResponse } from "./util";
 import { config } from "dotenv";
 import { verifyToken } from "./middleware/auth";

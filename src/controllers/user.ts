@@ -1,9 +1,13 @@
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { items, orders } from "../data";
+import { orderState, Seller } from "../interfaces";
 import { User } from "../models/user";
-import { constructResponse, isBodyEmpty, sendFailResponse } from "../util";
+import { constructResponse, idDoesNotExist, isBodyEmpty, isIdExists, sendFailResponse } from "../util";
+import { sellers, users } from "./../data";
 
+//USER
 export const register = async (request: Request, res: Response): Promise<void> => {
   try {
     if (isBodyEmpty(request))
@@ -65,6 +69,140 @@ export const login = async (request: Request, res: Response): Promise<void> => {
     sendFailResponse(res, error.message);
   }
 };
+//X USER END
+
+//SELLER
+interface newItem {
+  label: string;
+  color: string;
+}
+
+export const postItem = (request: Request, res: Response): void => {
+  try {
+    const item: newItem = request.body;
+
+    if (isBodyEmpty(request) || item.label === "" || item.color === "")
+      throw new Error();
+
+    res.status(201).send(constructResponse("Success", item));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
+};
+
+export const deleteItem = (request: Request, res: Response): void => {
+  try {
+    const itemId = +request.params.id;
+
+    if (!isIdExists(items, itemId)) {
+      idDoesNotExist(res);
+      return;
+    }
+
+    if (isNaN(itemId))
+      throw new Error();
+
+    res.status(200).send(constructResponse("Success"));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
+};
+
+export const editItem = (request: Request, res: Response): void => {
+  try {
+    const itemId = +request.params.id;
+    const newItem: newItem = request.body;
+
+    if (!isIdExists(items, itemId)) {
+      idDoesNotExist(res);
+      return;
+    }
+    
+    if (isNaN(itemId) || isBodyEmpty(request) || newItem.label === "" || newItem.color === "")
+      throw new Error();
+    
+    const newItemWithId = {...newItem, id: itemId};
+    items.map(item => item.id === itemId && newItemWithId);
+
+    res.status(200).send(constructResponse("Success", newItemWithId));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
+};
+
+export const changeOrderState = (request: Request, res: Response): void => { 
+  try {
+    const orderId = +request.params.id;
+
+    if (!isIdExists(orders, orderId)) {
+      idDoesNotExist(res);
+      return;
+    }
+    
+    if (isNaN(orderId) || isBodyEmpty(request))
+      throw new Error();
+    
+    const newOrderState: orderState = request.body;
+
+    orders.forEach(x => x.id === orderId && (x.state = newOrderState));
+
+    res.status(200).send(constructResponse("Success"));
+
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
+};
+
+export const getSellers = (_request: Request, res: Response): void => {
+  try {
+    
+    res.status(200).send(constructResponse("Success", sellers));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
+};
+//X SELLER END
+
+// ADMIN
+export const postSeller = (request: Request, res: Response): void => {
+  try {
+
+    if (isBodyEmpty(request))
+      throw new Error();
+
+    const newSeller: Seller = request.body;
+    sellers.push(newSeller);
+
+    res.status(201).send(constructResponse("Success"));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
+};
+
+export const deleteUser = (request: Request, res: Response): void => {
+  try {
+    const userId = +request.params.id;
+
+    if (!isIdExists(users, userId)) {
+      idDoesNotExist(res);
+      return;
+    }
+
+    if (isNaN(userId))
+      throw new Error();
+
+    res.status(200).send(constructResponse("Success"));
+    
+  } catch (error) {
+    sendFailResponse(res, error.message);
+  }
+};
+//X ADMIN END
 
 const createToken = (user_id: string, email: string): string => {
   return jwt.sign({ user_id, email }, process.env.TOKEN_KEY, { expiresIn: "2h" });
