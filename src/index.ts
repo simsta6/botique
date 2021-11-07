@@ -8,7 +8,7 @@ import {
 } from "./controllers/user";
 import { sendFailResponse } from "./util";
 import { config } from "dotenv";
-import { verifyToken } from "./middleware/auth";
+import { verifyIsAdmin, verifyIsSeller, verifyToken } from "./middleware/auth";
 
 config();
 
@@ -26,20 +26,20 @@ server.get("/api/items", getAllItems); //                                       
 server.get("/api/items/:id", getItem); //                                           ITEM
 
 // Chart
-server.get("/api/charts", getAllItemsInChart); //                                   ITEM 
-server.post("/api/charts/:id", addItemToChart); //                                  ITEM
+server.get("/api/charts", verifyToken, getAllItemsInChart); //                      ITEM 
+server.post("/api/charts/:id/:count", verifyToken, addItemToChart); //              ITEM
 
 // User 
-server.delete("/api/users/:id", deleteUser); //                                           
+server.delete("/api/users/:id", verifyToken, verifyIsAdmin, deleteUser); //
 
 // Admin
-server.post("/api/sellers", verifyToken, postSeller); //                            SELLER
+server.post("/api/sellers", verifyToken, verifyIsAdmin, postSeller); //             SELLER
 // Seller
 server.get("/api/sellers", getSellers); //                                          SELLER
-server.post("/api/items", postItem); //                                             SELLER                    
-server.patch("/api/items/:id", editItem); //                                        SELLER
-server.patch("/api/orders/:id", changeOrderState); //                               SELLER
-server.delete("/api/items/:id", deleteItem); //                                     SELLER
+server.post("/api/items", verifyToken, verifyIsSeller, postItem); //                SELLER                    
+server.patch("/api/items/:id", verifyToken, verifyIsSeller, editItem); //           SELLER //TODO check if he owns this item....
+server.patch("/api/orders/:id", verifyToken, verifyIsSeller, changeOrderState); //  SELLER
+server.delete("/api/items/:id", verifyToken, verifyIsSeller, deleteItem); //        SELLER
 
 // Reviews
 server.post("/api/items/:id/reviews", postReview); //                               REVIEW

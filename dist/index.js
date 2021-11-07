@@ -39,15 +39,15 @@ server.post("/api/login", user_1.login);
 server.get("/api/items", item_1.getAllItems); //                                           ITEM
 server.get("/api/items/:id", item_1.getItem); //                                           ITEM
 // Chart
-server.get("/api/charts", chart_1.getAllItemsInChart); //                                   ITEM 
-server.post("/api/charts/:id", chart_1.addItemToChart); //                                  ITEM
+server.get("/api/charts", auth_1.verifyToken, chart_1.getAllItemsInChart); //                      ITEM 
+server.post("/api/charts/:id/:count", auth_1.verifyToken, chart_1.addItemToChart); //              ITEM
 // User 
-server.delete("/api/users/:id", user_1.deleteUser); //                                           
+server.delete("/api/users/:id", auth_1.verifyToken, auth_1.verifyIsAdmin, user_1.deleteUser); //
 // Admin
-server.post("/api/sellers", auth_1.verifyToken, user_1.postSeller); //                            SELLER
+server.post("/api/sellers", auth_1.verifyToken, auth_1.verifyIsAdmin, user_1.postSeller); //             SELLER
 // Seller
 server.get("/api/sellers", user_1.getSellers); //                                          SELLER
-server.post("/api/items", user_1.postItem); //                                             SELLER                    
+server.post("/api/items", auth_1.verifyToken, user_1.postItem); //                                SELLER                    
 server.patch("/api/items/:id", user_1.editItem); //                                        SELLER
 server.patch("/api/orders/:id", user_1.changeOrderState); //                               SELLER
 server.delete("/api/items/:id", user_1.deleteItem); //                                     SELLER

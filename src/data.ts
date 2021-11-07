@@ -1,4 +1,4 @@
-import { ChartItem, Item, Order, Review, Seller, User } from "./interfaces";
+import { ChartItem, Item, Order, Review } from "./interfaces";
 
 export const items: Item[] = [
   {id: 1, label: "first item", color: "FFFFFF"},
@@ -31,22 +31,5 @@ export const reviews: Review[] = [
     title: "AAAA",
     date: "NOT HAPPY",
     rating: 5
-  }
-];
-
-export const users: User[] = [
-  {
-    id: 1,
-    name: "User1",
-    address: ""
-  }
-];
-
-export const sellers: Seller[] = [
-  {
-    id: 1,
-    name: "Seller1",
-    address: "",
-    shopName: "Maxima"
   }
 ];

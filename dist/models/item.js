@@ -8,13 +8,13 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const itemSchema = new mongoose_1.default.Schema({
     brand: { type: String, required: true },
     color: { type: String, required: true },
-    count: { type: String, required: true },
-    size: { type: String, required: true },
-    price: { type: String, required: true },
+    count: { type: Number, required: true },
+    size: { type: Number, required: true },
+    price: { type: Number, required: true },
     imageUrl: { type: String, required: true },
     seller: {
         type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "seller",
+        ref: "user",
     },
 });
 exports.Item = mongoose_1.default.model("item", itemSchema);

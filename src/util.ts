@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { AnyTypeOfArray } from "./interfaces";
+import { Model, isValidObjectId, Types } from "mongoose";
 
 interface ResponseMessage {
   status: "Success" | "Failed",
@@ -19,3 +20,16 @@ export const isIdExists = (data: AnyTypeOfArray[], id: number): boolean => data.
 
 export const idDoesNotExist = (res: Response): void => 
   void res.status(404).send(constructResponse("Failed", "ID does not exist"));
+
+// TODO: fix this
+export const isNumeric = (str: number | string): boolean => {
+  return str && true;
+};
+
+export const isNumberPositive = (number: number): boolean => number > 0;
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const isWrongId = async (model: Model<unknown, {}, {}, {}>, _id: string): Promise<boolean> => 
+  !(isValidObjectId(_id) && (await model.exists({ _id })));
+
+export const ObjectId = (id: string): Types.ObjectId => new Types.ObjectId(id);

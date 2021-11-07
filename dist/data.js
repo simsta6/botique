@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sellers = exports.users = exports.reviews = exports.orders = exports.itemsWaitingForApproval = exports.chart = exports.items = void 0;
+exports.reviews = exports.orders = exports.itemsWaitingForApproval = exports.chart = exports.items = void 0;
 exports.items = [
     { id: 1, label: "first item", color: "FFFFFF" },
     { id: 2, label: "second item", color: "000000" }
@@ -28,21 +28,6 @@ exports.reviews = [
         title: "AAAA",
         date: "NOT HAPPY",
         rating: 5
-    }
-];
-exports.users = [
-    {
-        id: 1,
-        name: "User1",
-        address: ""
-    }
-];
-exports.sellers = [
-    {
-        id: 1,
-        name: "Seller1",
-        address: "",
-        shopName: "Maxima"
     }
 ];
 //# sourceMappingURL=data.js.map

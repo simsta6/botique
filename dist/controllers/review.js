@@ -16,7 +16,7 @@ const postReview = (request, res) => {
         res.status(201).send((0, util_1.constructResponse)("Success", newReview));
     }
     catch (error) {
-        (0, util_1.sendFailResponse)(res, error.message);
+        (0, util_1.sendFailResponse)(res, 400, error.message);
     }
 };
 exports.postReview = postReview;
@@ -33,7 +33,7 @@ const deleteReview = (request, res) => {
         res.status(200).send((0, util_1.constructResponse)("Success"));
     }
     catch (error) {
-        (0, util_1.sendFailResponse)(res, error.message);
+        (0, util_1.sendFailResponse)(res, 400, error.message);
     }
 };
 exports.deleteReview = deleteReview;
@@ -51,7 +51,7 @@ const editReview = (request, res) => {
         res.status(200).send((0, util_1.constructResponse)("Success", newReview));
     }
     catch (error) {
-        (0, util_1.sendFailResponse)(res, error.message);
+        (0, util_1.sendFailResponse)(res, 400, error.message);
     }
 };
 exports.editReview = editReview;
@@ -65,7 +65,7 @@ const getReviews = (request, res) => {
         res.status(200).send((0, util_1.constructResponse)("Success", data_1.reviews));
     }
     catch (error) {
-        (0, util_1.sendFailResponse)(res, error.message);
+        (0, util_1.sendFailResponse)(res, 400, error.message);
     }
 };
 exports.getReviews = getReviews;
@@ -83,7 +83,7 @@ const getReview = (request, res) => {
         res.status(200).send((0, util_1.constructResponse)("Success", review));
     }
     catch (error) {
-        (0, util_1.sendFailResponse)(res, error.message);
+        (0, util_1.sendFailResponse)(res, 400, error.message);
     }
 };
 exports.getReview = getReview;

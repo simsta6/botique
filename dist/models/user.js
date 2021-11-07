@@ -15,7 +15,7 @@ const userSchema = new mongoose_1.default.Schema({
     first_name: { type: String, default: null },
     last_name: { type: String, default: null },
     email: { type: String, unique: true, required: true },
-    password: { type: String, required: true, minlength: 6, select: false },
+    password: { type: String, required: true, minlength: 6 },
     token: { type: String },
     role: {
         type: String,

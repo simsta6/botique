@@ -19,7 +19,7 @@ export const postReview = (request: Request, res: Response): void => {
     res.status(201).send(constructResponse("Success", newReview));
     
   } catch (error) {
-    sendFailResponse(res, error.message);
+    sendFailResponse(res, 400, error.message);
   }
 };
 
@@ -39,7 +39,7 @@ export const deleteReview = (request: Request, res: Response): void => {
     res.status(200).send(constructResponse("Success"));
     
   } catch (error) {
-    sendFailResponse(res, error.message);
+    sendFailResponse(res, 400, error.message);
   }
 };
 
@@ -60,7 +60,7 @@ export const editReview = (request: Request, res: Response): void => {
     res.status(200).send(constructResponse("Success", newReview));
     
   } catch (error) {
-    sendFailResponse(res, error.message);
+    sendFailResponse(res, 400, error.message);
   }
 };
 
@@ -77,7 +77,7 @@ export const getReviews = (request: Request, res: Response): void => {
     res.status(200).send(constructResponse("Success", reviews));
     
   } catch (error) {
-    sendFailResponse(res, error.message);
+    sendFailResponse(res, 400, error.message);
   }
 };
 
@@ -99,6 +99,6 @@ export const getReview = (request: Request, res: Response): void => {
     res.status(200).send(constructResponse("Success", review));
     
   } catch (error) {
-    sendFailResponse(res, error.message);
+    sendFailResponse(res, 400, error.message);
   }
 };

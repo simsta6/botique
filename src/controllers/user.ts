@@ -1,18 +1,16 @@
 import bcrypt from "bcrypt";
-import { Request, Response } from "express";
+import { Response } from "express";
 import jwt from "jsonwebtoken";
+import { IItem, Item } from "../models/item";
 import { items, orders } from "../data";
-import { orderState, Seller } from "../interfaces";
-import { User } from "../models/user";
-import { constructResponse, idDoesNotExist, isBodyEmpty, isIdExists, sendFailResponse } from "../util";
-import { sellers, users } from "./../data";
+import { orderState, Request } from "../interfaces";
+import { Role, User } from "../models/user";
+import { constructResponse, idDoesNotExist, isBodyEmpty, isIdExists, isNumberPositive, isNumeric, isWrongId, sendFailResponse, ObjectId } from "../util";
+import { CallbackError } from "mongoose";
 
 //USER
 export const register = async (request: Request, res: Response): Promise<void> => {
   try {
-    if (isBodyEmpty(request))
-      throw new Error();
-
     const { first_name, last_name, email, password } = request.body;
 
     if (!(email && password && first_name && last_name)) {
@@ -40,7 +38,7 @@ export const register = async (request: Request, res: Response): Promise<void> =
     res.status(201).send(constructResponse("Success", user));
     
   } catch (error) {
-    sendFailResponse(res, error.message);
+    sendFailResponse(res, 400, error.message);
   }
 };
 
@@ -66,28 +64,27 @@ export const login = async (request: Request, res: Response): Promise<void> => {
     sendFailResponse(res, 400, "Invalid Credentials");
     
   } catch (error) {
-    sendFailResponse(res, error.message);
+    sendFailResponse(res, 400, error.message);
   }
 };
 //X USER END
 
 //SELLER
-interface newItem {
-  label: string;
-  color: string;
-}
 
-export const postItem = (request: Request, res: Response): void => {
+export const postItem = async (request: Request, res: Response): Promise<void> => {
   try {
-    const item: newItem = request.body;
+    const item: IItem = request.body;
 
-    if (isBodyEmpty(request) || item.label === "" || item.color === "")
-      throw new Error();
+    const {isValid, message} = isItemValid(item);
+    if (!isValid) 
+      throw new Error(message);
+    
+    const newItem = await Item.create({ ...item, seller: ObjectId(request.user.user_id) });
 
-    res.status(201).send(constructResponse("Success", item));
+    res.status(201).send(constructResponse("Success", newItem));
     
   } catch (error) {
-    sendFailResponse(res, error.message);
+    sendFailResponse(res, 400, error.message);
   }
 };
 
@@ -106,21 +103,21 @@ export const deleteItem = (request: Request, res: Response): void => {
     res.status(200).send(constructResponse("Success"));
     
   } catch (error) {
-    sendFailResponse(res, error.message);
+    sendFailResponse(res, 400, error.message);
   }
 };
 
 export const editItem = (request: Request, res: Response): void => {
   try {
     const itemId = +request.params.id;
-    const newItem: newItem = request.body;
+    const newItem: IItem = request.body;
 
     if (!isIdExists(items, itemId)) {
       idDoesNotExist(res);
       return;
     }
     
-    if (isNaN(itemId) || isBodyEmpty(request) || newItem.label === "" || newItem.color === "")
+    if (isNaN(itemId) || isBodyEmpty(request) || newItem.color === "")
       throw new Error();
     
     const newItemWithId = {...newItem, id: itemId};
@@ -129,7 +126,7 @@ export const editItem = (request: Request, res: Response): void => {
     res.status(200).send(constructResponse("Success", newItemWithId));
     
   } catch (error) {
-    sendFailResponse(res, error.message);
+    sendFailResponse(res, 400, error.message);
   }
 };
 
@@ -152,54 +149,85 @@ export const changeOrderState = (request: Request, res: Response): void => {
     res.status(200).send(constructResponse("Success"));
 
   } catch (error) {
-    sendFailResponse(res, error.message);
+    sendFailResponse(res, 400, error.message);
   }
 };
 
-export const getSellers = (_request: Request, res: Response): void => {
+export const getSellers = async (_request: Request, res: Response): Promise<void> => {
   try {
-    
-    res.status(200).send(constructResponse("Success", sellers));
+    const users = await User.where("role").equals(Role.SELLER);
+    res.status(200).send(constructResponse("Success", users));
     
   } catch (error) {
-    sendFailResponse(res, error.message);
+    sendFailResponse(res, 400, error.message);
   }
+};
+
+const isItemValid = (item: IItem): {isValid: boolean, message: string} => {
+  const { brand, color, count, size, price, imageUrl } = item;
+
+  if (!(brand && color && count && size && price && imageUrl))
+    return { isValid: false, message: "You need to fill all fields!" };
+
+  if (!(isNumeric(count) && isNumeric(size) && isNumeric(price)))
+    return { isValid: false, message: "Count, size and price should be numeric!" };
+
+  if (!(isNumberPositive(count) && isNumberPositive(size) && isNumberPositive(price)))
+    return { isValid: false, message: "Count, size and price should be numeric!"};
+  
+  return { isValid: true, message: "Success" };
 };
 //X SELLER END
 
 // ADMIN
-export const postSeller = (request: Request, res: Response): void => {
+export const postSeller = async (request: Request, res: Response): Promise<void> => {
   try {
+    const { first_name, last_name, email, password } = request.body;
 
-    if (isBodyEmpty(request))
-      throw new Error();
-
-    const newSeller: Seller = request.body;
-    sellers.push(newSeller);
-
-    res.status(201).send(constructResponse("Success"));
-    
-  } catch (error) {
-    sendFailResponse(res, error.message);
-  }
-};
-
-export const deleteUser = (request: Request, res: Response): void => {
-  try {
-    const userId = +request.params.id;
-
-    if (!isIdExists(users, userId)) {
-      idDoesNotExist(res);
+    if (!(email && password && first_name && last_name)) {
+      sendFailResponse(res, 400, "All input is required");
       return;
     }
 
-    if (isNaN(userId))
-      throw new Error();
+    const oldUser = await User.findOne({ email });
 
-    res.status(200).send(constructResponse("Success"));
-    
+    if (oldUser) {
+      sendFailResponse(res, 409, "Seller Already Exist. Please use different email");
+      return;
+    }
+
+    const encryptedPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      first_name,
+      last_name,
+      email: email.toLowerCase(),
+      password: encryptedPassword,
+      role: Role.SELLER,
+    });
+
+    res.status(201).send(constructResponse("Success", user));
   } catch (error) {
-    sendFailResponse(res, error.message);
+    sendFailResponse(res, 400, error.message);
+  }
+};
+
+export const deleteUser = async (request: Request, res: Response): Promise<void> => {
+  try {
+    const userId = request.params.id;
+
+    if (await isWrongId(User, userId)) {   
+      throw new Error("Wrong item id");
+    }
+
+    User.findByIdAndRemove(userId, (err: CallbackError) => {
+      if (err) {
+        throw new Error(err.message);
+      }
+      res.status(200).send(constructResponse("Success"));
+    });
+  } catch (error) {
+    sendFailResponse(res, 400, error.message);
   }
 };
 //X ADMIN END

@@ -1,5 +1,11 @@
-export interface Seller extends User {
-  shopName: string;
+import { Request as R } from "express";
+
+export interface IUser extends Express.User {
+  user_id?: string;
+}
+
+export interface Request extends R {
+  user?: IUser;
 }
 
 export interface Review {
@@ -9,12 +15,6 @@ export interface Review {
   title: string;
   date: string;
   rating: 1 | 2 | 3 | 4 | 5;
-}
-
-export interface User {
-  id: number;
-  name: string;
-  address?: string;
 }
 
 export interface Item {
@@ -38,4 +38,4 @@ export interface Order {
   state: orderState;
 }
 
-export type AnyTypeOfArray = Order | ChartItem | Item | User | Review | Seller;
+export type AnyTypeOfArray = Order | ChartItem | Item | Review;

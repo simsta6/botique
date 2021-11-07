@@ -1,16 +1,26 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
+
+export interface IItem extends Document  {
+  brand: string;
+  color: string;
+  count: number;
+  size: number;
+  price: number;
+  imageUrl: string;
+  seller: Types.ObjectId;
+}
 
 const itemSchema = new mongoose.Schema({
   brand: { type: String, required: true },
   color: { type: String, required: true },
-  count: { type: String, required: true },
-  size: { type: String, required: true },
-  price: { type: String, required: true },
+  count: { type: Number, required: true },
+  size: { type: Number, required: true },
+  price: { type: Number, required: true },
   imageUrl: { type: String, required: true },
   seller: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "seller",
+    ref: "user",
   },
 });
 
-export const Item = mongoose.model("item", itemSchema);
+export const Item = mongoose.model<IItem>("item", itemSchema);
