@@ -1,6 +1,6 @@
 import mongoose, { Document, Types } from "mongoose";
 
-interface IItem extends Document {
+export interface IItem extends Document {
   item: Types.ObjectId;
   count: number;
 }
@@ -10,7 +10,7 @@ export interface IChart extends Document  {
   items: IItem[];
 }
 
-const itemsSchema = new mongoose.Schema({
+export const itemsSchema = new mongoose.Schema({
   item: { 
     type: mongoose.Schema.Types.ObjectId,
     ref: "item",

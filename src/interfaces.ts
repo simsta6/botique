@@ -28,14 +28,4 @@ export interface ChartItem {
   count: number
 }
 
-export type orderState = "pending" | "paid" | "approved" | "finished" | "canceled";
-
-export interface Order {
-  id: number;
-  address: string;
-  items: ChartItem[];
-  sellerId: number;
-  state: orderState;
-}
-
-export type AnyTypeOfArray = Order | ChartItem | Item | Review;
+export type AnyTypeOfArray = ChartItem | Item | Review;

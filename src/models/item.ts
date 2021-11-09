@@ -1,4 +1,4 @@
-import mongoose, { Types } from "mongoose";
+import mongoose, { Types, Document } from "mongoose";
 
 export interface IItem extends Document  {
   brand: string;

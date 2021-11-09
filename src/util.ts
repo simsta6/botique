@@ -21,11 +21,6 @@ export const isIdExists = (data: AnyTypeOfArray[], id: number): boolean => data.
 export const idDoesNotExist = (res: Response): void => 
   void res.status(404).send(constructResponse("Failed", "ID does not exist"));
 
-// TODO: fix this
-export const isNumeric = (str: number | string): boolean => {
-  return str && true;
-};
-
 export const isNumberPositive = (number: number): boolean => number > 0;
 
 // eslint-disable-next-line @typescript-eslint/ban-types

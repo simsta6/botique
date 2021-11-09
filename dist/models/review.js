@@ -15,7 +15,7 @@ const reviewSchema = new mongoose_1.default.Schema({
         ref: "item",
     },
     rating: { type: Number, min: 1, max: 5, required: true },
-    review: { type: String },
+    comment: { type: String },
 });
 exports.Review = mongoose_1.default.model("review", reviewSchema);
 //# sourceMappingURL=review.js.map

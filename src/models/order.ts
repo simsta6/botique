@@ -1,28 +1,37 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
+import { IItem, itemsSchema } from "./chart";
 
-export enum State {
-  WAITING_FOR_PAYMENT = "waiting_for_payment",
-  WAITING_FOR_SELLER_APPROVEMENT = "waiting_for_seller_approvement",
+export interface IOrder extends Document  {
+  user: Types.ObjectId;
+  seller: Types.ObjectId;
+  items: IItem[];
+  state?: OrderState;
+}
+
+export enum OrderState {
+  PENDING = "pending",
+  PAID = "paid",
+  APPROVED = "approved",
   SHIPPED = "shipped",
   DELIVERED = "delivered",
   CANCELED = "canceled",
 }
-
 
 const orderSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
   },
-  items: [{
+  seller: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "item",
-  }],
+    ref: "user"
+  },
+  items: [itemsSchema],
   state: {
     type: String,
-    enum : State,
-    default: State.WAITING_FOR_PAYMENT
+    enum : OrderState,
+    default: OrderState.PENDING,
   },
 });
 
-export const Order = mongoose.model("order", orderSchema);
+export const Order = mongoose.model<IOrder>("order", orderSchema);

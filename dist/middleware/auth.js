@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyIsAdmin = exports.verifyIsSeller = exports.verifyToken = void 0;
+exports.verifyIsAdmin = exports.verifyIsSeller = exports.verifyIsSellersModel = exports.verifyToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_1 = require("../models/user");
 const util_1 = require("../util");
@@ -37,6 +37,27 @@ const getToken = (request) => {
     const token = authHeader && authHeader.split(" ")[1];
     return token;
 };
+// eslint-disable-next-line @typescript-eslint/ban-types
+const verifyIsSellersModel = (model) => (request, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const itemId = request.params.id;
+        if (yield (0, util_1.isWrongId)(model, itemId)) {
+            throw new Error("Wrong item id");
+        }
+        const item = yield model.findById(request.params.id);
+        const itemSellerID = item.seller.toString();
+        const sellersID = request.user.user_id;
+        if (sellersID !== itemSellerID) {
+            (0, util_1.sendFailResponse)(res, 401, "You do not have permission!");
+            return;
+        }
+        return next();
+    }
+    catch (err) {
+        (0, util_1.sendFailResponse)(res, 400, err.message);
+    }
+});
+exports.verifyIsSellersModel = verifyIsSellersModel;
 const verifyIsSeller = (request, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const isSeller = yield verifyRole(request, res, user_1.Role.SELLER);

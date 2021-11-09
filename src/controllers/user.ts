@@ -1,12 +1,10 @@
 import bcrypt from "bcrypt";
 import { Response } from "express";
 import jwt from "jsonwebtoken";
-import { IItem, Item } from "../models/item";
-import { items, orders } from "../data";
-import { orderState, Request } from "../interfaces";
-import { Role, User } from "../models/user";
-import { constructResponse, idDoesNotExist, isBodyEmpty, isIdExists, isNumberPositive, isNumeric, isWrongId, sendFailResponse, ObjectId } from "../util";
 import { CallbackError } from "mongoose";
+import { Request } from "../interfaces";
+import { Role, User } from "../models/user";
+import { constructResponse, isBodyEmpty, isWrongId, sendFailResponse } from "../util";
 
 //USER
 export const register = async (request: Request, res: Response): Promise<void> => {
@@ -71,88 +69,6 @@ export const login = async (request: Request, res: Response): Promise<void> => {
 
 //SELLER
 
-export const postItem = async (request: Request, res: Response): Promise<void> => {
-  try {
-    const item: IItem = request.body;
-
-    const {isValid, message} = isItemValid(item);
-    if (!isValid) 
-      throw new Error(message);
-    
-    const newItem = await Item.create({ ...item, seller: ObjectId(request.user.user_id) });
-
-    res.status(201).send(constructResponse("Success", newItem));
-    
-  } catch (error) {
-    sendFailResponse(res, 400, error.message);
-  }
-};
-
-export const deleteItem = (request: Request, res: Response): void => {
-  try {
-    const itemId = +request.params.id;
-
-    if (!isIdExists(items, itemId)) {
-      idDoesNotExist(res);
-      return;
-    }
-
-    if (isNaN(itemId))
-      throw new Error();
-
-    res.status(200).send(constructResponse("Success"));
-    
-  } catch (error) {
-    sendFailResponse(res, 400, error.message);
-  }
-};
-
-export const editItem = (request: Request, res: Response): void => {
-  try {
-    const itemId = +request.params.id;
-    const newItem: IItem = request.body;
-
-    if (!isIdExists(items, itemId)) {
-      idDoesNotExist(res);
-      return;
-    }
-    
-    if (isNaN(itemId) || isBodyEmpty(request) || newItem.color === "")
-      throw new Error();
-    
-    const newItemWithId = {...newItem, id: itemId};
-    items.map(item => item.id === itemId && newItemWithId);
-
-    res.status(200).send(constructResponse("Success", newItemWithId));
-    
-  } catch (error) {
-    sendFailResponse(res, 400, error.message);
-  }
-};
-
-export const changeOrderState = (request: Request, res: Response): void => { 
-  try {
-    const orderId = +request.params.id;
-
-    if (!isIdExists(orders, orderId)) {
-      idDoesNotExist(res);
-      return;
-    }
-    
-    if (isNaN(orderId) || isBodyEmpty(request))
-      throw new Error();
-    
-    const newOrderState: orderState = request.body;
-
-    orders.forEach(x => x.id === orderId && (x.state = newOrderState));
-
-    res.status(200).send(constructResponse("Success"));
-
-  } catch (error) {
-    sendFailResponse(res, 400, error.message);
-  }
-};
-
 export const getSellers = async (_request: Request, res: Response): Promise<void> => {
   try {
     const users = await User.where("role").equals(Role.SELLER);
@@ -161,21 +77,6 @@ export const getSellers = async (_request: Request, res: Response): Promise<void
   } catch (error) {
     sendFailResponse(res, 400, error.message);
   }
-};
-
-const isItemValid = (item: IItem): {isValid: boolean, message: string} => {
-  const { brand, color, count, size, price, imageUrl } = item;
-
-  if (!(brand && color && count && size && price && imageUrl))
-    return { isValid: false, message: "You need to fill all fields!" };
-
-  if (!(isNumeric(count) && isNumeric(size) && isNumeric(price)))
-    return { isValid: false, message: "Count, size and price should be numeric!" };
-
-  if (!(isNumberPositive(count) && isNumberPositive(size) && isNumberPositive(price)))
-    return { isValid: false, message: "Count, size and price should be numeric!"};
-  
-  return { isValid: true, message: "Success" };
 };
 //X SELLER END
 
@@ -224,7 +125,7 @@ export const deleteUser = async (request: Request, res: Response): Promise<void>
       if (err) {
         throw new Error(err.message);
       }
-      res.status(200).send(constructResponse("Success"));
+      res.status(204).send();
     });
   } catch (error) {
     sendFailResponse(res, 400, error.message);

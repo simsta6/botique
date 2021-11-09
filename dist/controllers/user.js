@@ -12,11 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.postSeller = exports.getSellers = exports.changeOrderState = exports.editItem = exports.deleteItem = exports.postItem = exports.login = exports.register = void 0;
+exports.deleteUser = exports.postSeller = exports.getSellers = exports.login = exports.register = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const item_1 = require("../models/item");
-const data_1 = require("../data");
 const user_1 = require("../models/user");
 const util_1 = require("../util");
 //USER
@@ -71,73 +69,6 @@ const login = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.login = login;
 //X USER END
 //SELLER
-const postItem = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const item = request.body;
-        const { isValid, message } = isItemValid(item);
-        if (!isValid)
-            throw new Error(message);
-        const newItem = yield item_1.Item.create(Object.assign(Object.assign({}, item), { seller: (0, util_1.ObjectId)(request.user.user_id) }));
-        res.status(201).send((0, util_1.constructResponse)("Success", newItem));
-    }
-    catch (error) {
-        (0, util_1.sendFailResponse)(res, 400, error.message);
-    }
-});
-exports.postItem = postItem;
-const deleteItem = (request, res) => {
-    try {
-        const itemId = +request.params.id;
-        if (!(0, util_1.isIdExists)(data_1.items, itemId)) {
-            (0, util_1.idDoesNotExist)(res);
-            return;
-        }
-        if (isNaN(itemId))
-            throw new Error();
-        res.status(200).send((0, util_1.constructResponse)("Success"));
-    }
-    catch (error) {
-        (0, util_1.sendFailResponse)(res, 400, error.message);
-    }
-};
-exports.deleteItem = deleteItem;
-const editItem = (request, res) => {
-    try {
-        const itemId = +request.params.id;
-        const newItem = request.body;
-        if (!(0, util_1.isIdExists)(data_1.items, itemId)) {
-            (0, util_1.idDoesNotExist)(res);
-            return;
-        }
-        if (isNaN(itemId) || (0, util_1.isBodyEmpty)(request) || newItem.color === "")
-            throw new Error();
-        const newItemWithId = Object.assign(Object.assign({}, newItem), { id: itemId });
-        data_1.items.map(item => item.id === itemId && newItemWithId);
-        res.status(200).send((0, util_1.constructResponse)("Success", newItemWithId));
-    }
-    catch (error) {
-        (0, util_1.sendFailResponse)(res, 400, error.message);
-    }
-};
-exports.editItem = editItem;
-const changeOrderState = (request, res) => {
-    try {
-        const orderId = +request.params.id;
-        if (!(0, util_1.isIdExists)(data_1.orders, orderId)) {
-            (0, util_1.idDoesNotExist)(res);
-            return;
-        }
-        if (isNaN(orderId) || (0, util_1.isBodyEmpty)(request))
-            throw new Error();
-        const newOrderState = request.body;
-        data_1.orders.forEach(x => x.id === orderId && (x.state = newOrderState));
-        res.status(200).send((0, util_1.constructResponse)("Success"));
-    }
-    catch (error) {
-        (0, util_1.sendFailResponse)(res, 400, error.message);
-    }
-};
-exports.changeOrderState = changeOrderState;
 const getSellers = (_request, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const users = yield user_1.User.where("role").equals(user_1.Role.SELLER);
@@ -148,16 +79,6 @@ const getSellers = (_request, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.getSellers = getSellers;
-const isItemValid = (item) => {
-    const { brand, color, count, size, price, imageUrl } = item;
-    if (!(brand && color && count && size && price && imageUrl))
-        return { isValid: false, message: "You need to fill all fields!" };
-    if (!((0, util_1.isNumeric)(count) && (0, util_1.isNumeric)(size) && (0, util_1.isNumeric)(price)))
-        return { isValid: false, message: "Count, size and price should be numeric!" };
-    if (!((0, util_1.isNumberPositive)(count) && (0, util_1.isNumberPositive)(size) && (0, util_1.isNumberPositive)(price)))
-        return { isValid: false, message: "Count, size and price should be numeric!" };
-    return { isValid: true, message: "Success" };
-};
 //X SELLER END
 // ADMIN
 const postSeller = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -197,7 +118,7 @@ const deleteUser = (request, res) => __awaiter(void 0, void 0, void 0, function*
             if (err) {
                 throw new Error(err.message);
             }
-            res.status(200).send((0, util_1.constructResponse)("Success"));
+            res.status(204).send();
         });
     }
     catch (error) {

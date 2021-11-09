@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Chart = void 0;
+exports.Chart = exports.itemsSchema = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
-const itemsSchema = new mongoose_1.default.Schema({
+exports.itemsSchema = new mongoose_1.default.Schema({
     item: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "item",
@@ -17,7 +17,7 @@ const chartSchema = new mongoose_1.default.Schema({
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "user",
     },
-    items: [itemsSchema],
+    items: [exports.itemsSchema],
 });
 exports.Chart = mongoose_1.default.model("chart", chartSchema);
 //# sourceMappingURL=chart.js.map

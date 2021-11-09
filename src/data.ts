@@ -1,4 +1,4 @@
-import { ChartItem, Item, Order, Review } from "./interfaces";
+import { ChartItem, Item, Review } from "./interfaces";
 
 export const items: Item[] = [
   {id: 1, label: "first item", color: "FFFFFF"},
@@ -11,16 +11,6 @@ export const chart: ChartItem[] = [
 
 export const itemsWaitingForApproval: Item[] = [
   {id: 3, label: "second item", color: "000000"}
-];
-
-export const orders: Order[] = [
-  {
-    id: 1,
-    address: "random address data",
-    items: [{id: 1, count: 1}],
-    sellerId: 5,
-    state: "approved"
-  }
 ];
 
 export const reviews: Review[] = [

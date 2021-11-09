@@ -1,4 +1,11 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
+
+export interface IReview extends Document  {
+  user: Types.ObjectId;
+  item: Types.ObjectId;
+  rating: number;
+  comment: string;
+}
 
 const reviewSchema = new mongoose.Schema({
   user: {
@@ -10,7 +17,7 @@ const reviewSchema = new mongoose.Schema({
     ref: "item",
   },
   rating: { type: Number, min: 1, max: 5, required: true },
-  review: { type: String },
+  comment: { type: String },
 });
 
-export const Review = mongoose.model("review", reviewSchema);
+export const Review = mongoose.model<IReview>("review", reviewSchema);
