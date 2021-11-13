@@ -26,7 +26,7 @@ const verifyToken = (request, res, next) => __awaiter(void 0, void 0, void 0, fu
     }
     catch (err) {
         if (err.name === "TokenDestroyedError") {
-            (0, util_1.sendFailResponse)(res, 401, "Token Destroyed Error");
+            (0, util_1.sendFailResponse)(res, 401, "Token Destroyed");
             return;
         }
         (0, util_1.sendFailResponse)(res, 401, "Invalid Token");

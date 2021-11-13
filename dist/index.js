@@ -42,7 +42,11 @@ const redis_1 = __importDefault(require("redis"));
 const server = (0, express_1.default)();
 server.use((0, express_1.json)());
 const port = process.env.PORT || 5000;
-const redisClient = redis_1.default.createClient();
+const redisClient = redis_1.default.createClient({
+    host: process.env.REDIS_HOSTNAME,
+    port: +process.env.REDIS_PORT,
+    password: process.env.REDIS_PASSWORD
+});
 redisClient.on("error", function (error) {
     console.error(error);
 });

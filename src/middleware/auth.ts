@@ -36,7 +36,7 @@ const getToken = (request: Request): string => {
 };
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export const verifyIsSellersModel = (model: Model<IItem | IOrder, {}, {}, {}>) =>
+export const verifyIsUserHasThisModel = (model: Model<IItem | IOrder, {}, {}, {}>) =>
   async (request: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const itemId = request.params.id;

@@ -6,7 +6,7 @@ import { deleteItem, editItem, getAllItems, getItem, postItem } from "./controll
 import { changeOrderState, postOrder } from "./controllers/order";
 import { deleteReview, editReview, getReview, getReviews, postReview } from "./controllers/review";
 import { deleteUser, getSellers, login, logout, postSeller, register } from "./controllers/user";
-import { verifyIsAdmin, verifyIsSeller, verifyIsSellersModel, verifyToken } from "./middleware/auth";
+import { verifyIsAdmin, verifyIsSeller, verifyIsUserHasThisModel, verifyToken } from "./middleware/auth";
 import { Item } from "./models/item";
 import { Order } from "./models/order";
 import { sendFailResponse } from "./util";
@@ -21,18 +21,24 @@ server.use(json());
 
 const port = process.env.PORT || 5000;
 
-const redisClient = redis.createClient();
+const redisClient = redis.createClient({
+  host: process.env.REDIS_HOSTNAME,
+  port: +process.env.REDIS_PORT,
+  password: process.env.REDIS_PASSWORD
+});
+
 redisClient.on("error", function(error) {
   console.error(error);
 });
+
 export const jwrt = new JWTRedis(redisClient);
 
 // Item
 server.get("/api/items", getAllItems);
 server.get("/api/items/:id", getItem);
 server.post("/api/items", verifyToken, verifyIsSeller, postItem);                  
-server.patch("/api/items/:id", verifyToken, verifyIsSeller, verifyIsSellersModel(Item), editItem); 
-server.delete("/api/items/:id", verifyToken, verifyIsSeller, verifyIsSellersModel(Item), deleteItem);
+server.patch("/api/items/:id", verifyToken, verifyIsSeller, verifyIsUserHasThisModel(Item), editItem); 
+server.delete("/api/items/:id", verifyToken, verifyIsSeller, verifyIsUserHasThisModel(Item), deleteItem);
 
 // Chart
 server.get("/api/charts", verifyToken, getAllItemsInChart);
@@ -40,7 +46,7 @@ server.post("/api/charts/:id/:count", verifyToken, addItemToChart);
 
 // Order
 server.post("/api/orders", verifyToken, postOrder);
-server.patch("/api/orders/:id", verifyToken, verifyIsSeller, verifyIsSellersModel(Order), changeOrderState);
+server.patch("/api/orders/:id", verifyToken, verifyIsSeller, verifyIsUserHasThisModel(Order), changeOrderState);
 
 // User 
 server.delete("/api/users/:id", verifyToken, verifyIsAdmin, deleteUser);
