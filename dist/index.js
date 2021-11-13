@@ -18,7 +18,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.jwrt = void 0;
 const dotenv_1 = require("dotenv");
 const express_1 = __importStar(require("express"));
 const database_1 = require("./config/database");
@@ -31,11 +35,18 @@ const auth_1 = require("./middleware/auth");
 const item_2 = require("./models/item");
 const order_2 = require("./models/order");
 const util_1 = require("./util");
+const jwt_redis_1 = __importDefault(require("jwt-redis"));
+const redis_1 = __importDefault(require("redis"));
 (0, dotenv_1.config)();
 (0, database_1.connect)();
 const server = (0, express_1.default)();
 server.use((0, express_1.json)());
 const port = process.env.PORT || 5000;
+const redisClient = redis_1.default.createClient();
+redisClient.on("error", function (error) {
+    console.error(error);
+});
+exports.jwrt = new jwt_redis_1.default(redisClient);
 // Item
 server.get("/api/items", item_1.getAllItems);
 server.get("/api/items/:id", item_1.getItem);
@@ -54,6 +65,7 @@ server.post("/api/sellers", auth_1.verifyToken, auth_1.verifyIsAdmin, user_1.pos
 server.get("/api/sellers", user_1.getSellers);
 server.post("/api/register", user_1.register);
 server.post("/api/login", user_1.login);
+server.post("/api/logout", auth_1.verifyToken, user_1.logout);
 // Reviews
 server.post("/api/items/:id/reviews", auth_1.verifyToken, review_1.postReview);
 server.get("/api/items/:id/reviews", review_1.getReviews);

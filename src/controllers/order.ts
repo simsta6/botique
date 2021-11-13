@@ -7,9 +7,9 @@ import { constructResponse, ObjectId, sendFailResponse } from "../util";
 
 export const postOrder = async (request: Request, res: Response): Promise<void> => { 
   try {
-    const user = ObjectId(request.user.user_id);
+    const user = ObjectId((await request.user).user_id);
 
-    Chart.findOne({user: request.user.user_id}, async (err: CallbackError, chart: IChart) => {
+    Chart.findOne({user:(await request.user).user_id}, async (err: CallbackError, chart: IChart) => {
       if (err) {
         throw new Error(err.message);
       }

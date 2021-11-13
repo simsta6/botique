@@ -17,7 +17,7 @@ export const postReview = async (request: Request, res: Response): Promise<void>
     if (!isValid) 
       throw new Error(message);
     
-    const newReview = await Review.create({ ...review, user: ObjectId(request.user.user_id), item: ObjectId(itemId) });
+    const newReview = await Review.create({ ...review, user: ObjectId((await request.user).user_id), item: ObjectId(itemId) });
 
     res.status(201).send(constructResponse("Success", newReview));
     

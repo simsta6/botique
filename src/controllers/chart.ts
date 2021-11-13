@@ -7,7 +7,7 @@ import { constructResponse, isWrongId, ObjectId, sendFailResponse } from "../uti
 
 export const getAllItemsInChart = async (request: Request, res: Response): Promise<void> => {
   try {
-    const itemsInChart = (await(await Chart.findOne({user: request.user.user_id}).populate("items.item")).items);
+    const itemsInChart = (await(await Chart.findOne({user: (await request.user).user_id}).populate("items.item")).items);
 
     res.status(200).send(constructResponse("Success", itemsInChart));
     
@@ -24,9 +24,9 @@ export const addItemToChart = async (request: Request, res: Response): Promise<v
 
     const count = +request.params.count;
     const itemId = ObjectId(request.params.id);
-    const user = ObjectId(request.user.user_id);
+    const user = ObjectId((await request.user).user_id);
     
-    const chart = await Chart.findOne({user: request.user.user_id});
+    const chart = await Chart.findOne({user: (await request.user).user_id});
 
     if (!chart) {
       const returnValue = await Chart.create({ user, items: [{ item: itemId, count: count }] });

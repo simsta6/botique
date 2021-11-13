@@ -1,13 +1,13 @@
 import { NextFunction, Response } from "express";
-import jwt from "jsonwebtoken";
 import { Model } from "mongoose";
 import { IOrder } from "../models/order";
 import { IUser, Request } from "../interfaces";
 import { IItem } from "../models/item";
 import { Role, User } from "../models/user";
 import { isWrongId, sendFailResponse } from "../util";
+import { jwrt } from "../index";
 
-export const verifyToken = (request: Request, res: Response, next: NextFunction): void => {
+export const verifyToken = async (request: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const token = getToken(request);
 
@@ -16,10 +16,14 @@ export const verifyToken = (request: Request, res: Response, next: NextFunction)
       return;
     }
 
-    const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+    const decoded = await jwrt.verify(token, process.env.TOKEN_KEY);
     request.user = decoded as IUser;
     return next();
   } catch (err) {
+    if (err.name === "TokenDestroyedError") {
+      sendFailResponse(res, 401, "Token Destroyed");
+      return;
+    }
     sendFailResponse(res, 401, "Invalid Token");
   }
 };
@@ -43,7 +47,7 @@ export const verifyIsSellersModel = (model: Model<IItem | IOrder, {}, {}, {}>) =
 
       const item = await model.findById(request.params.id);
       const itemSellerID = item.seller.toString();
-      const sellersID = request.user.user_id;
+      const sellersID = (await request.user).user_id;
 
       if (sellersID !== itemSellerID){
         sendFailResponse(res, 401, "You do not have a permission!");
@@ -86,7 +90,7 @@ export const verifyIsAdmin = async (request: Request, res: Response, next: NextF
 
 const verifyRole = async (request: Request, res: Response, role: Role): Promise<boolean> => {
   try {
-    const gottenRole = (await User.findById(request.user.user_id )).role.toString() ;
+    const gottenRole = (await User.findById((await request.user).user_id )).role.toString() ;
     const isAdmin = gottenRole === role;
     return isAdmin;
   } catch (err) {

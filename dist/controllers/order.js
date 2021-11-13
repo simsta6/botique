@@ -15,8 +15,8 @@ const order_1 = require("../models/order");
 const util_1 = require("../util");
 const postOrder = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const user = (0, util_1.ObjectId)(request.user.user_id);
-        chart_1.Chart.findOne({ user: request.user.user_id }, (err, chart) => __awaiter(void 0, void 0, void 0, function* () {
+        const user = (0, util_1.ObjectId)((yield request.user).user_id);
+        chart_1.Chart.findOne({ user: (yield request.user).user_id }, (err, chart) => __awaiter(void 0, void 0, void 0, function* () {
             if (err) {
                 throw new Error(err.message);
             }

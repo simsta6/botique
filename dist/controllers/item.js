@@ -39,7 +39,7 @@ const postItem = (request, res) => __awaiter(void 0, void 0, void 0, function* (
         const { isValid, message } = isItemValid(item);
         if (!isValid)
             throw new Error(message);
-        const newItem = yield item_1.Item.create(Object.assign(Object.assign({}, item), { seller: (0, util_1.ObjectId)(request.user.user_id) }));
+        const newItem = yield item_1.Item.create(Object.assign(Object.assign({}, item), { seller: (0, util_1.ObjectId)((yield request.user).user_id) }));
         res.status(201).send((0, util_1.constructResponse)("Success", newItem));
     }
     catch (error) {

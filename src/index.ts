@@ -5,11 +5,13 @@ import { addItemToChart, getAllItemsInChart } from "./controllers/chart";
 import { deleteItem, editItem, getAllItems, getItem, postItem } from "./controllers/item";
 import { changeOrderState, postOrder } from "./controllers/order";
 import { deleteReview, editReview, getReview, getReviews, postReview } from "./controllers/review";
-import { deleteUser, getSellers, login, postSeller, register } from "./controllers/user";
+import { deleteUser, getSellers, login, logout, postSeller, register } from "./controllers/user";
 import { verifyIsAdmin, verifyIsSeller, verifyIsSellersModel, verifyToken } from "./middleware/auth";
 import { Item } from "./models/item";
 import { Order } from "./models/order";
 import { sendFailResponse } from "./util";
+import JWTRedis from "jwt-redis";
+import redis from "redis";
 
 config();
 
@@ -18,6 +20,12 @@ const server = express();
 server.use(json());
 
 const port = process.env.PORT || 5000;
+
+const redisClient = redis.createClient();
+redisClient.on("error", function(error) {
+  console.error(error);
+});
+export const jwrt = new JWTRedis(redisClient);
 
 // Item
 server.get("/api/items", getAllItems);
@@ -40,6 +48,7 @@ server.post("/api/sellers", verifyToken, verifyIsAdmin, postSeller);
 server.get("/api/sellers", getSellers);
 server.post("/api/register", register);
 server.post("/api/login", login);
+server.post("/api/logout", verifyToken, logout);
 
 // Reviews
 server.post("/api/items/:id/reviews",verifyToken, postReview);

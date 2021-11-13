@@ -15,7 +15,7 @@ const item_1 = require("../models/item");
 const util_1 = require("../util");
 const getAllItemsInChart = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const itemsInChart = (yield (yield chart_1.Chart.findOne({ user: request.user.user_id }).populate("items.item")).items);
+        const itemsInChart = (yield (yield chart_1.Chart.findOne({ user: (yield request.user).user_id }).populate("items.item")).items);
         res.status(200).send((0, util_1.constructResponse)("Success", itemsInChart));
     }
     catch (error) {
@@ -30,8 +30,8 @@ const addItemToChart = (request, res) => __awaiter(void 0, void 0, void 0, funct
         }
         const count = +request.params.count;
         const itemId = (0, util_1.ObjectId)(request.params.id);
-        const user = (0, util_1.ObjectId)(request.user.user_id);
-        const chart = yield chart_1.Chart.findOne({ user: request.user.user_id });
+        const user = (0, util_1.ObjectId)((yield request.user).user_id);
+        const chart = yield chart_1.Chart.findOne({ user: (yield request.user).user_id });
         if (!chart) {
             const returnValue = yield chart_1.Chart.create({ user, items: [{ item: itemId, count: count }] });
             res.status(200).send((0, util_1.constructResponse)("Success", returnValue));

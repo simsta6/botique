@@ -8,29 +8,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyIsAdmin = exports.verifyIsSeller = exports.verifyIsSellersModel = exports.verifyToken = void 0;
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_1 = require("../models/user");
 const util_1 = require("../util");
-const verifyToken = (request, res, next) => {
+const index_1 = require("../index");
+const verifyToken = (request, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = getToken(request);
         if (!token) {
             (0, util_1.sendFailResponse)(res, 403, "A token is required for authentication");
             return;
         }
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.TOKEN_KEY);
+        const decoded = yield index_1.jwrt.verify(token, process.env.TOKEN_KEY);
         request.user = decoded;
         return next();
     }
     catch (err) {
+        if (err.name === "TokenDestroyedError") {
+            (0, util_1.sendFailResponse)(res, 401, "Token Destroyed Error");
+            return;
+        }
         (0, util_1.sendFailResponse)(res, 401, "Invalid Token");
     }
-};
+});
 exports.verifyToken = verifyToken;
 const getToken = (request) => {
     const authHeader = request.headers["authorization"];
@@ -46,7 +47,7 @@ const verifyIsSellersModel = (model) => (request, res, next) => __awaiter(void 0
         }
         const item = yield model.findById(request.params.id);
         const itemSellerID = item.seller.toString();
-        const sellersID = request.user.user_id;
+        const sellersID = (yield request.user).user_id;
         if (sellersID !== itemSellerID) {
             (0, util_1.sendFailResponse)(res, 401, "You do not have a permission!");
             return;
@@ -88,7 +89,7 @@ const verifyIsAdmin = (request, res, next) => __awaiter(void 0, void 0, void 0, 
 exports.verifyIsAdmin = verifyIsAdmin;
 const verifyRole = (request, res, role) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const gottenRole = (yield user_1.User.findById(request.user.user_id)).role.toString();
+        const gottenRole = (yield user_1.User.findById((yield request.user).user_id)).role.toString();
         const isAdmin = gottenRole === role;
         return isAdmin;
     }

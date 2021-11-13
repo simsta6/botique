@@ -12,11 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.postSeller = exports.getSellers = exports.login = exports.register = void 0;
+exports.deleteUser = exports.postSeller = exports.getSellers = exports.logout = exports.login = exports.register = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_1 = require("../models/user");
 const util_1 = require("../util");
+const index_1 = require("../index");
 //USER
 const register = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -37,7 +37,7 @@ const register = (request, res) => __awaiter(void 0, void 0, void 0, function* (
             email: email.toLowerCase(),
             password: encryptedPassword,
         });
-        user.token = createToken(user._id, email);
+        user.token = yield createToken(user._id, email);
         res.status(201).send((0, util_1.constructResponse)("Success", user));
     }
     catch (error) {
@@ -56,7 +56,7 @@ const login = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const user = yield user_1.User.findOne({ email });
         if (user && (yield bcrypt_1.default.compare(password, user.password))) {
-            user.token = createToken(user._id, email);
+            user.token = yield createToken(user._id, email);
             res.status(200).send((0, util_1.constructResponse)("Success", user));
             return;
         }
@@ -67,6 +67,22 @@ const login = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.login = login;
+const logout = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield request.user;
+        const jti = user.jti;
+        if (!jti) {
+            (0, util_1.sendFailResponse)(res, 401, "You are logged out");
+            return;
+        }
+        index_1.jwrt.destroy(jti);
+        res.status(204).send((0, util_1.constructResponse)("Success"));
+    }
+    catch (error) {
+        (0, util_1.sendFailResponse)(res, 400, error.message);
+    }
+});
+exports.logout = logout;
 //X USER END
 //SELLER
 const getSellers = (_request, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -126,6 +142,6 @@ const deleteUser = (request, res) => __awaiter(void 0, void 0, void 0, function*
 exports.deleteUser = deleteUser;
 //X ADMIN END
 const createToken = (user_id, email) => {
-    return jsonwebtoken_1.default.sign({ user_id, email }, process.env.TOKEN_KEY, { expiresIn: "2h" });
+    return index_1.jwrt.sign({ user_id, email }, process.env.TOKEN_KEY, { expiresIn: "2h" });
 };
 //# sourceMappingURL=user.js.map

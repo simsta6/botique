@@ -23,7 +23,7 @@ const postReview = (request, res) => __awaiter(void 0, void 0, void 0, function*
         const { isValid, message } = isReviewValid(review);
         if (!isValid)
             throw new Error(message);
-        const newReview = yield review_1.Review.create(Object.assign(Object.assign({}, review), { user: (0, util_1.ObjectId)(request.user.user_id), item: (0, util_1.ObjectId)(itemId) }));
+        const newReview = yield review_1.Review.create(Object.assign(Object.assign({}, review), { user: (0, util_1.ObjectId)((yield request.user).user_id), item: (0, util_1.ObjectId)(itemId) }));
         res.status(201).send((0, util_1.constructResponse)("Success", newReview));
     }
     catch (error) {

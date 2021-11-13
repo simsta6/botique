@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import { Response } from "express";
-import jwt from "jsonwebtoken";
 import { Request } from "../interfaces";
 import { Role, User } from "../models/user";
 import { constructResponse, isBodyEmpty, isWrongId, sendFailResponse } from "../util";
+import { jwrt } from "../index";
 
 //USER
 export const register = async (request: Request, res: Response): Promise<void> => {
@@ -30,7 +30,7 @@ export const register = async (request: Request, res: Response): Promise<void> =
       email: email.toLowerCase(),
       password: encryptedPassword,
     });
-    user.token = createToken(user._id, email);
+    user.token = await createToken(user._id, email);
 
     res.status(201).send(constructResponse("Success", user));
     
@@ -53,13 +53,30 @@ export const login = async (request: Request, res: Response): Promise<void> => {
 
     const user = await User.findOne({ email });
     if (user && (await bcrypt.compare(password, user.password))) {
-      user.token = createToken(user._id, email);
+      user.token = await createToken(user._id, email);
 
       res.status(200).send(constructResponse("Success", user));
       return;
     }
     sendFailResponse(res, 400, "Invalid Credentials");
     
+  } catch (error) {
+    sendFailResponse(res, 400, error.message);
+  }
+};
+
+export const logout = async (request: Request, res: Response): Promise<void> => {
+  try {
+    const user = await request.user;
+    const jti = user.jti;
+
+    if (!jti) {
+      sendFailResponse(res, 401, "You are logged out");
+      return;
+    }
+
+    jwrt.destroy(jti);
+    res.status(204).send(constructResponse("Success"));
   } catch (error) {
     sendFailResponse(res, 400, error.message);
   }
@@ -133,6 +150,6 @@ export const deleteUser = async (request: Request, res: Response): Promise<void>
 };
 //X ADMIN END
 
-const createToken = (user_id: string, email: string): string => {
-  return jwt.sign({ user_id, email }, process.env.TOKEN_KEY, { expiresIn: "2h" });
+const createToken = (user_id: string, email: string): Promise<string> => {
+  return jwrt.sign({ user_id, email }, process.env.TOKEN_KEY, { expiresIn: "2h" });
 };

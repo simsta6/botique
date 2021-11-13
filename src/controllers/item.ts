@@ -34,7 +34,7 @@ export const postItem = async (request: Request, res: Response): Promise<void> =
     if (!isValid) 
       throw new Error(message);
     
-    const newItem = await Item.create({ ...item, seller: ObjectId(request.user.user_id) });
+    const newItem = await Item.create({ ...item, seller: ObjectId((await request.user).user_id) });
 
     res.status(201).send(constructResponse("Success", newItem));
     
