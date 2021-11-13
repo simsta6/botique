@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import { Response } from "express";
 import jwt from "jsonwebtoken";
-import { CallbackError } from "mongoose";
 import { Request } from "../interfaces";
 import { Role, User } from "../models/user";
 import { constructResponse, isBodyEmpty, isWrongId, sendFailResponse } from "../util";
@@ -71,7 +70,7 @@ export const login = async (request: Request, res: Response): Promise<void> => {
 
 export const getSellers = async (_request: Request, res: Response): Promise<void> => {
   try {
-    const users = await User.where("role").equals(Role.SELLER);
+    const users = await User.where("role").equals(Role.SELLER).select("_id first_name last_name email");
     res.status(200).send(constructResponse("Success", users));
     
   } catch (error) {
@@ -121,12 +120,13 @@ export const deleteUser = async (request: Request, res: Response): Promise<void>
       throw new Error("Wrong item id");
     }
 
-    User.findByIdAndRemove(userId, (err: CallbackError) => {
-      if (err) {
-        throw new Error(err.message);
-      }
-      res.status(204).send();
-    });
+    const wasDeleted = await User.findById(userId).then(user => 
+      user.role.toString() === Role.ADMIN ? false : (user.delete(), true));
+
+    if (!wasDeleted)
+      throw new Error("You do not have a permission!");
+    
+    res.status(204).send();
   } catch (error) {
     sendFailResponse(res, 400, error.message);
   }

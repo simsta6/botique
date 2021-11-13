@@ -71,7 +71,7 @@ exports.login = login;
 //SELLER
 const getSellers = (_request, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const users = yield user_1.User.where("role").equals(user_1.Role.SELLER);
+        const users = yield user_1.User.where("role").equals(user_1.Role.SELLER).select("_id first_name last_name email");
         res.status(200).send((0, util_1.constructResponse)("Success", users));
     }
     catch (error) {
@@ -114,12 +114,10 @@ const deleteUser = (request, res) => __awaiter(void 0, void 0, void 0, function*
         if (yield (0, util_1.isWrongId)(user_1.User, userId)) {
             throw new Error("Wrong item id");
         }
-        user_1.User.findByIdAndRemove(userId, (err) => {
-            if (err) {
-                throw new Error(err.message);
-            }
-            res.status(204).send();
-        });
+        const wasDeleted = yield user_1.User.findById(userId).then(user => user.role.toString() === user_1.Role.ADMIN ? false : (user.delete(), true));
+        if (!wasDeleted)
+            throw new Error("You do not have a permission!");
+        res.status(204).send();
     }
     catch (error) {
         (0, util_1.sendFailResponse)(res, 400, error.message);
