@@ -46,7 +46,7 @@ export const verifyIsSellersModel = (model: Model<IItem | IOrder, {}, {}, {}>) =
       const sellersID = request.user.user_id;
 
       if (sellersID !== itemSellerID){
-        sendFailResponse(res, 401, "You do not have permission!");
+        sendFailResponse(res, 401, "You do not have a permission!");
         return;
       }
 
@@ -60,7 +60,7 @@ export const verifyIsSeller = async (request: Request, res: Response, next: Next
   try {
     const isSeller = await verifyRole(request, res, Role.SELLER);
     if (!isSeller){
-      sendFailResponse(res, 401, "You do not have permission!");
+      sendFailResponse(res, 401, "You do not have a permission!");
       return;
     }
 
@@ -74,7 +74,7 @@ export const verifyIsAdmin = async (request: Request, res: Response, next: NextF
   try {
     const isAdmin = await verifyRole(request, res, Role.ADMIN);
     if (!isAdmin){
-      sendFailResponse(res, 401, "You do not have permission!");
+      sendFailResponse(res, 401, "You do not have a permission!");
       return;
     }
 

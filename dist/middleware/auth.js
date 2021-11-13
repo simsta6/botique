@@ -48,7 +48,7 @@ const verifyIsSellersModel = (model) => (request, res, next) => __awaiter(void 0
         const itemSellerID = item.seller.toString();
         const sellersID = request.user.user_id;
         if (sellersID !== itemSellerID) {
-            (0, util_1.sendFailResponse)(res, 401, "You do not have permission!");
+            (0, util_1.sendFailResponse)(res, 401, "You do not have a permission!");
             return;
         }
         return next();
@@ -62,7 +62,7 @@ const verifyIsSeller = (request, res, next) => __awaiter(void 0, void 0, void 0,
     try {
         const isSeller = yield verifyRole(request, res, user_1.Role.SELLER);
         if (!isSeller) {
-            (0, util_1.sendFailResponse)(res, 401, "You do not have permission!");
+            (0, util_1.sendFailResponse)(res, 401, "You do not have a permission!");
             return;
         }
         return next();
@@ -76,7 +76,7 @@ const verifyIsAdmin = (request, res, next) => __awaiter(void 0, void 0, void 0, 
     try {
         const isAdmin = yield verifyRole(request, res, user_1.Role.ADMIN);
         if (!isAdmin) {
-            (0, util_1.sendFailResponse)(res, 401, "You do not have permission!");
+            (0, util_1.sendFailResponse)(res, 401, "You do not have a permission!");
             return;
         }
         return next();
