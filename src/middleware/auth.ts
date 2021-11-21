@@ -4,7 +4,7 @@ import { IOrder } from "../models/order";
 import { IUser, Request } from "../interfaces";
 import { IItem } from "../models/item";
 import { Role, User } from "../models/user";
-import { isWrongId, sendFailResponse } from "../util";
+import { idDoesNotExist, isWrongId, sendFailResponse } from "../util";
 import { jwrt } from "../index";
 
 export const verifyToken = async (request: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -42,7 +42,8 @@ export const verifyIsUserHasThisModel = (model: Model<IItem | IOrder, {}, {}, {}
       const itemId = request.params.id;
 
       if (await isWrongId(model, itemId)) {   
-        throw new Error("Wrong item id");
+        idDoesNotExist(res);
+        return;
       }
 
       const item = await model.findById(request.params.id);

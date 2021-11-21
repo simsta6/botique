@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { Response } from "express";
 import { Request } from "../interfaces";
 import { Role, User } from "../models/user";
-import { constructResponse, isBodyEmpty, isWrongId, sendFailResponse } from "../util";
+import { constructResponse, idDoesNotExist, isBodyEmpty, isWrongId, sendFailResponse } from "../util";
 import { jwrt } from "../index";
 
 //USER
@@ -134,7 +134,8 @@ export const deleteUser = async (request: Request, res: Response): Promise<void>
     const userId = request.params.id;
 
     if (await isWrongId(User, userId)) {   
-      throw new Error("Wrong item id");
+      idDoesNotExist(res);
+      return;
     }
 
     const wasDeleted = await User.findById(userId).then(user => 

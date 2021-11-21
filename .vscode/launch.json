@@ -16,6 +16,24 @@
       "outFiles": [
         "${workspaceFolder}/dist/**/*.js"
       ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mocha All",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [
+          "-r",
+          "ts-node/register",
+          "--timeout",
+          "999999",
+          "--colors",
+          "${workspaceFolder}/src/test/**/*.ts",
+          "--exit"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
     }
   ]
 }

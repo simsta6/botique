@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { constructResponse, isWrongId, ObjectId, sendFailResponse } from "../util";
+import { constructResponse, idDoesNotExist, isWrongId, ObjectId, sendFailResponse } from "../util";
 import { IReview } from "../models/review";
 import { Review } from "../models/review";
 import { Request } from "../interfaces";
@@ -9,7 +9,8 @@ export const postReview = async (request: Request, res: Response): Promise<void>
   try {
     const itemId = request.params.id;
     if (await isWrongId(Item, itemId)) {   
-      throw new Error("Wrong item id");
+      idDoesNotExist(res);
+      return;
     }
 
     const review: IReview = request.body;
@@ -32,11 +33,13 @@ export const deleteReview = async (request: Request, res: Response): Promise<voi
     const reviewId = request.params.reviewId;
 
     if (await isWrongId(Item, itemId)) {   
-      throw new Error("Wrong item id");
+      idDoesNotExist(res);
+      return;
     }
 
     if (await isWrongId(Review, reviewId)) {   
-      throw new Error("Wrong review id");
+      idDoesNotExist(res);
+      return;
     }
     
     await Review.findOneAndDelete({_id: reviewId, item: itemId});
@@ -54,11 +57,13 @@ export const editReview = async (request: Request, res: Response): Promise<void>
     const reviewId = request.params.reviewId;
 
     if (await isWrongId(Item, itemId)) {   
-      throw new Error("Wrong item id");
+      idDoesNotExist(res);
+      return;
     }
 
     if (await isWrongId(Review, reviewId)) {   
-      throw new Error("Wrong review id");
+      idDoesNotExist(res);
+      return;
     }
 
     const review: IReview = request.body;
@@ -80,7 +85,8 @@ export const getReviews = async (request: Request, res: Response): Promise<void>
     const itemId = request.params.id;
 
     if (await isWrongId(Item, itemId)) {   
-      throw new Error("Wrong item id");
+      idDoesNotExist(res);
+      return;
     }
     
     const reviews = await Review.find({item: itemId});
@@ -98,11 +104,13 @@ export const getReview = async (request: Request, res: Response): Promise<void> 
     const reviewId = request.params.reviewId;
 
     if (await isWrongId(Item, itemId)) {   
-      throw new Error("Wrong item id");
+      idDoesNotExist(res);
+      return;
     }
 
     if (await isWrongId(Review, reviewId)) {   
-      throw new Error("Wrong review id");
+      idDoesNotExist(res);
+      return;
     }
     
     const reviews = await Review.find({item: itemId}).findOne({_id: reviewId});

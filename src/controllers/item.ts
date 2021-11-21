@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { IItem, Item } from "../models/item";
-import { constructResponse, isNumberPositive, ObjectId, sendFailResponse } from "../util";
+import { constructResponse, isNumberPositive, isWrongId, ObjectId, sendFailResponse } from "../util";
 import { Request } from "../interfaces";
 
 export const getAllItems = async (_request: Request, res: Response): Promise<void> => {
@@ -15,6 +15,10 @@ export const getAllItems = async (_request: Request, res: Response): Promise<voi
 export const getItem = async (request: Request, res: Response): Promise<void> => {
   try {
     const itemId = request.params.id;
+
+    if (await isWrongId(Item, request.params.id)) {   
+      throw new Error("Wrong item id");
+    }
 
     const item = await Item.findById(itemId);
 
@@ -61,6 +65,10 @@ export const editItem = async (request: Request, res: Response): Promise<void> =
     const item: IItem = request.body;
 
     const {isValid, message} = isItemValid(item);
+
+    if (await isWrongId(Item, request.params.id)) {   
+      throw new Error("Wrong item id");
+    }
 
     if (!isValid) 
       throw new Error(message);

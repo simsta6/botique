@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 import { Request } from "../interfaces";
 import { Chart, IItem } from "../models/chart";
 import { Item } from "../models/item";
-import { constructResponse, isWrongId, ObjectId, sendFailResponse } from "../util";
+import { constructResponse, idDoesNotExist, isWrongId, ObjectId, sendFailResponse } from "../util";
 
 export const getAllItemsInChart = async (request: Request, res: Response): Promise<void> => {
   try {
@@ -19,7 +19,8 @@ export const getAllItemsInChart = async (request: Request, res: Response): Promi
 export const addItemToChart = async (request: Request, res: Response): Promise<void> => {
   try {
     if (await isWrongId(Item, request.params.id)) {   
-      throw new Error("Wrong item id");
+      idDoesNotExist(res);
+      return;
     }
 
     const count = +request.params.count;

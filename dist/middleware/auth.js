@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyIsAdmin = exports.verifyIsSeller = exports.verifyIsSellersModel = exports.verifyToken = void 0;
+exports.verifyIsAdmin = exports.verifyIsSeller = exports.verifyIsUserHasThisModel = exports.verifyToken = void 0;
 const user_1 = require("../models/user");
 const util_1 = require("../util");
 const index_1 = require("../index");
@@ -39,7 +39,7 @@ const getToken = (request) => {
     return token;
 };
 // eslint-disable-next-line @typescript-eslint/ban-types
-const verifyIsSellersModel = (model) => (request, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const verifyIsUserHasThisModel = (model) => (request, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const itemId = request.params.id;
         if (yield (0, util_1.isWrongId)(model, itemId)) {
@@ -58,7 +58,7 @@ const verifyIsSellersModel = (model) => (request, res, next) => __awaiter(void 0
         (0, util_1.sendFailResponse)(res, 400, err.message);
     }
 });
-exports.verifyIsSellersModel = verifyIsSellersModel;
+exports.verifyIsUserHasThisModel = verifyIsUserHasThisModel;
 const verifyIsSeller = (request, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const isSeller = yield verifyRole(request, res, user_1.Role.SELLER);
