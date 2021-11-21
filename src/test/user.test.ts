@@ -209,6 +209,25 @@ describe("User registers and logins", () => {
       });
   });
 
+  it("FAIL, login with invalid credentials", () => {
+    return request(app)
+      .post("/api/login")
+      .send({
+        email: "wrong@gmail.com",
+        password: "wrong",
+      })
+      .then((res: request.Response) => {
+        const { body, statusCode } = res;
+        assert.equal(statusCode, 400);
+
+        const status = body.status;
+        assert.equal(status, "Failed");
+
+        const data = body.data;
+        assert.equal(data, "Invalid Credentials");
+      });
+  });
+
   it("OK, getSellers", () => {
     return request(app)
       .get("/api/sellers")
