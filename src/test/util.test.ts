@@ -1,6 +1,6 @@
 process.env.NODE_ENV = "test";
 
-import { assert } from "chai";
+import { assert, expect } from "chai";
 import { describe, Done, it } from "mocha";
 import { User } from "../models/user";
 import request from "supertest";
@@ -73,6 +73,7 @@ describe("Utils test", () => {
     } as Request;
 
     const res = isBodyEmpty(req);
+    expect(res).to.be.a("boolean");
     assert.equal(res, false);
   });
 
@@ -82,22 +83,21 @@ describe("Utils test", () => {
     } as Request;
 
     const res = isBodyEmpty(req);
+    expect(res).to.be.a("boolean");
     assert.equal(res, true);
   });
 
-  it("OK, isNumberPositive should return true when number is positive", () => {
-    const res = isNumberPositive(1);
-    assert.equal(res, true);
-  });
+  const isNumberPositiveTests = [
+    {arg: 1, expected: true},
+    {arg: -1, expected: false},
+    {arg: 0, expected: false}
+  ];
 
-  it("OK, isNumberPositive should return false when number is negative", () => {
-    const res = isNumberPositive(-1);
-    assert.equal(res, false);
+  isNumberPositiveTests.forEach((test) => {
+    it(`OK, isNumberPositive should return ${test.expected} when number is ${test.arg}`, () => {
+      const res = isNumberPositive(test.arg);
+      expect(res).to.be.a("boolean");
+      assert.equal(res, test.expected);
+    });
   });
-
-  it("OK, isNumberPositive should return false when number is 0", () => {
-    const res = isNumberPositive(0);
-    assert.equal(res, false);
-  });
-
 });
