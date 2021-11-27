@@ -5,6 +5,16 @@ import { Chart, IChart } from "../models/chart";
 import { Order, OrderState } from "../models/order";
 import { constructResponse, ObjectId, sendFailResponse } from "../util";
 
+export const getAllOrders = async (request: Request, res: Response): Promise<void> => {
+  try {
+    const seller = ObjectId((await request.user).user_id);
+    const orders = await Order.find({seller});
+    res.status(200).send(constructResponse("Success", orders));
+  } catch (error) {
+    sendFailResponse(res, 400, error.message);
+  }
+};
+
 export const postOrder = async (request: Request, res: Response): Promise<void> => { 
   try {
     const user = ObjectId((await request.user).user_id);

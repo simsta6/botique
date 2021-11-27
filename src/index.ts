@@ -21,3 +21,5 @@ export const jwrt = new JWTRedis(redisClient);
 export const initStart = async (): Promise<void> => {  
   await startServer();
 };
+
+process.env.NODE_ENV !== "test" && initStart();

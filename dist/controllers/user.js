@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.postSeller = exports.getSellers = exports.logout = exports.login = exports.register = void 0;
+exports.getBuyersAndSellers = exports.deleteUser = exports.postSeller = exports.getSellers = exports.logout = exports.login = exports.register = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const user_1 = require("../models/user");
 const util_1 = require("../util");
@@ -128,7 +128,8 @@ const deleteUser = (request, res) => __awaiter(void 0, void 0, void 0, function*
     try {
         const userId = request.params.id;
         if (yield (0, util_1.isWrongId)(user_1.User, userId)) {
-            throw new Error("Wrong item id");
+            (0, util_1.idDoesNotExist)(res);
+            return;
         }
         const wasDeleted = yield user_1.User.findById(userId).then(user => user.role.toString() === user_1.Role.ADMIN ? false : (user.delete(), true));
         if (!wasDeleted)
@@ -140,6 +141,16 @@ const deleteUser = (request, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.deleteUser = deleteUser;
+const getBuyersAndSellers = (_request, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const users = yield user_1.User.where("role").in([user_1.Role.BUYER, user_1.Role.SELLER]).select("_id first_name last_name email role");
+        res.status(200).send((0, util_1.constructResponse)("Success", users));
+    }
+    catch (error) {
+        (0, util_1.sendFailResponse)(res, 400, error.message);
+    }
+});
+exports.getBuyersAndSellers = getBuyersAndSellers;
 //X ADMIN END
 const createToken = (user_id, email) => {
     return index_1.jwrt.sign({ user_id, email }, process.env.TOKEN_KEY, { expiresIn: "2h" });

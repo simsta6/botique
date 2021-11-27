@@ -3,9 +3,9 @@ import { Server } from "node:http";
 import { connect } from "./config/database";
 import { addItemToChart, getAllItemsInChart } from "./controllers/chart";
 import { deleteItem, editItem, getAllItems, getItem, postItem } from "./controllers/item";
-import { changeOrderState, postOrder } from "./controllers/order";
+import { changeOrderState, getAllOrders, postOrder } from "./controllers/order";
 import { deleteReview, editReview, getReview, getReviews, postReview } from "./controllers/review";
-import { deleteUser, getSellers, login, logout, postSeller, register } from "./controllers/user";
+import { deleteUser, getBuyersAndSellers, getSellers, login, logout, postSeller, register } from "./controllers/user";
 import { verifyIsAdmin, verifyIsSeller, verifyIsUserHasThisModel, verifyToken } from "./middleware/auth";
 import { Item } from "./models/item";
 import { Order } from "./models/order";
@@ -37,11 +37,13 @@ export const startServer = async (): Promise<void> => {
   // Order
   app.post("/api/orders", verifyToken, postOrder);
   app.patch("/api/orders/:id", verifyToken, verifyIsSeller, verifyIsUserHasThisModel(Order), changeOrderState);
+  app.get("/api/orders", verifyToken, verifyIsSeller, getAllOrders);
 
   // User 
   app.delete("/api/users/:id", verifyToken, verifyIsAdmin, deleteUser);
   app.post("/api/sellers", verifyToken, verifyIsAdmin, postSeller); 
   app.get("/api/sellers", getSellers);
+  app.get("/api/users", verifyToken, verifyIsAdmin, getBuyersAndSellers);
   app.post("/api/register", register);
   app.post("/api/login", login);
   app.post("/api/logout", verifyToken, logout);

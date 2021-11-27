@@ -26,7 +26,8 @@ exports.getAllItemsInChart = getAllItemsInChart;
 const addItemToChart = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (yield (0, util_1.isWrongId)(item_1.Item, request.params.id)) {
-            throw new Error("Wrong item id");
+            (0, util_1.idDoesNotExist)(res);
+            return;
         }
         const count = +request.params.count;
         const itemId = (0, util_1.ObjectId)(request.params.id);

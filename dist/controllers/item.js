@@ -25,6 +25,9 @@ exports.getAllItems = getAllItems;
 const getItem = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const itemId = request.params.id;
+        if (yield (0, util_1.isWrongId)(item_1.Item, request.params.id)) {
+            throw new Error("Wrong item id");
+        }
         const item = yield item_1.Item.findById(itemId);
         res.status(200).send((0, util_1.constructResponse)("Success", item));
     }
@@ -63,6 +66,9 @@ const editItem = (request, res) => __awaiter(void 0, void 0, void 0, function* (
         const itemId = request.params.id;
         const item = request.body;
         const { isValid, message } = isItemValid(item);
+        if (yield (0, util_1.isWrongId)(item_1.Item, request.params.id)) {
+            throw new Error("Wrong item id");
+        }
         if (!isValid)
             throw new Error(message);
         const updatedItem = yield item_1.Item.findByIdAndUpdate(itemId, Object.assign({}, item), { new: true });

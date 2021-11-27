@@ -9,10 +9,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeOrderState = exports.postOrder = void 0;
+exports.changeOrderState = exports.postOrder = exports.getAllOrders = void 0;
 const chart_1 = require("../models/chart");
 const order_1 = require("../models/order");
 const util_1 = require("../util");
+const getAllOrders = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const seller = (0, util_1.ObjectId)((yield request.user).user_id);
+        const orders = yield order_1.Order.find({ seller });
+        res.status(200).send((0, util_1.constructResponse)("Success", orders));
+    }
+    catch (error) {
+        (0, util_1.sendFailResponse)(res, 400, error.message);
+    }
+});
+exports.getAllOrders = getAllOrders;
 const postOrder = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = (0, util_1.ObjectId)((yield request.user).user_id);

@@ -43,7 +43,8 @@ const verifyIsUserHasThisModel = (model) => (request, res, next) => __awaiter(vo
     try {
         const itemId = request.params.id;
         if (yield (0, util_1.isWrongId)(model, itemId)) {
-            throw new Error("Wrong item id");
+            (0, util_1.idDoesNotExist)(res);
+            return;
         }
         const item = yield model.findById(request.params.id);
         const itemSellerID = item.seller.toString();

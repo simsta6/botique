@@ -149,6 +149,16 @@ export const deleteUser = async (request: Request, res: Response): Promise<void>
     sendFailResponse(res, 400, error.message);
   }
 };
+
+export const getBuyersAndSellers = async (_request: Request, res: Response): Promise<void> => {
+  try {
+    const users = await User.where("role").in([Role.BUYER, Role.SELLER]).select("_id first_name last_name email role");
+    res.status(200).send(constructResponse("Success", users));
+    
+  } catch (error) {
+    sendFailResponse(res, 400, error.message);
+  }
+};
 //X ADMIN END
 
 const createToken = (user_id: string, email: string): Promise<string> => {

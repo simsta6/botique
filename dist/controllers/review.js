@@ -17,7 +17,8 @@ const postReview = (request, res) => __awaiter(void 0, void 0, void 0, function*
     try {
         const itemId = request.params.id;
         if (yield (0, util_1.isWrongId)(item_1.Item, itemId)) {
-            throw new Error("Wrong item id");
+            (0, util_1.idDoesNotExist)(res);
+            return;
         }
         const review = request.body;
         const { isValid, message } = isReviewValid(review);
@@ -36,10 +37,12 @@ const deleteReview = (request, res) => __awaiter(void 0, void 0, void 0, functio
         const itemId = request.params.id;
         const reviewId = request.params.reviewId;
         if (yield (0, util_1.isWrongId)(item_1.Item, itemId)) {
-            throw new Error("Wrong item id");
+            (0, util_1.idDoesNotExist)(res);
+            return;
         }
         if (yield (0, util_1.isWrongId)(review_1.Review, reviewId)) {
-            throw new Error("Wrong review id");
+            (0, util_1.idDoesNotExist)(res);
+            return;
         }
         yield review_1.Review.findOneAndDelete({ _id: reviewId, item: itemId });
         res.status(200).send();
@@ -54,10 +57,12 @@ const editReview = (request, res) => __awaiter(void 0, void 0, void 0, function*
         const itemId = request.params.id;
         const reviewId = request.params.reviewId;
         if (yield (0, util_1.isWrongId)(item_1.Item, itemId)) {
-            throw new Error("Wrong item id");
+            (0, util_1.idDoesNotExist)(res);
+            return;
         }
         if (yield (0, util_1.isWrongId)(review_1.Review, reviewId)) {
-            throw new Error("Wrong review id");
+            (0, util_1.idDoesNotExist)(res);
+            return;
         }
         const review = request.body;
         const { isValid, message } = isReviewValid(review);
@@ -75,7 +80,8 @@ const getReviews = (request, res) => __awaiter(void 0, void 0, void 0, function*
     try {
         const itemId = request.params.id;
         if (yield (0, util_1.isWrongId)(item_1.Item, itemId)) {
-            throw new Error("Wrong item id");
+            (0, util_1.idDoesNotExist)(res);
+            return;
         }
         const reviews = yield review_1.Review.find({ item: itemId });
         res.status(200).send((0, util_1.constructResponse)("Success", reviews));
@@ -90,10 +96,12 @@ const getReview = (request, res) => __awaiter(void 0, void 0, void 0, function* 
         const itemId = request.params.id;
         const reviewId = request.params.reviewId;
         if (yield (0, util_1.isWrongId)(item_1.Item, itemId)) {
-            throw new Error("Wrong item id");
+            (0, util_1.idDoesNotExist)(res);
+            return;
         }
         if (yield (0, util_1.isWrongId)(review_1.Review, reviewId)) {
-            throw new Error("Wrong review id");
+            (0, util_1.idDoesNotExist)(res);
+            return;
         }
         const reviews = yield review_1.Review.find({ item: itemId }).findOne({ _id: reviewId });
         res.status(200).send((0, util_1.constructResponse)("Success", reviews));
