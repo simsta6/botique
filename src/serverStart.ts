@@ -12,6 +12,7 @@ import { Order } from "./models/order";
 import { sendFailResponse } from "./util";
 import { closeConnection } from "./config/database";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 export let app: Express;
 let server: Server;
@@ -22,6 +23,8 @@ export const startServer = async (): Promise<void> => {
   app = express();
   app.use(json());
   app.use(cookieParser());
+  // TODO: add front server ip here from .env
+  app.use(cors({ credentials: true, origin: true }));
 
   const port = process.env.PORT || 5000;
 
