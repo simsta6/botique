@@ -17,6 +17,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const user_1 = require("../models/user");
 const util_1 = require("../util");
 const index_1 = require("../index");
+const auth_1 = require("../middleware/auth");
 //USER
 const register = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -57,6 +58,7 @@ const login = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield user_1.User.findOne({ email });
         if (user && (yield bcrypt_1.default.compare(password, user.password))) {
             user.token = yield createToken(user._id, email);
+            res.cookie("token", user.token, { httpOnly: true });
             res.status(200).send((0, util_1.constructResponse)("Success", user));
             return;
         }
@@ -69,8 +71,8 @@ const login = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.login = login;
 const logout = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const user = yield request.user;
-        const jti = user.jti;
+        const token = (0, auth_1.getToken)(request);
+        const jti = index_1.jwrt.decode(token).jti;
         if (!jti) {
             (0, util_1.sendFailResponse)(res, 401, "You are logged out");
             return;

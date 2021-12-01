@@ -4,6 +4,7 @@ import { Request } from "../interfaces";
 import { Role, User } from "../models/user";
 import { constructResponse, idDoesNotExist, isBodyEmpty, isWrongId, sendFailResponse } from "../util";
 import { jwrt } from "../index";
+import { getToken } from "../middleware/auth";
 
 //USER
 export const register = async (request: Request, res: Response): Promise<void> => {
@@ -54,6 +55,7 @@ export const login = async (request: Request, res: Response): Promise<void> => {
     const user = await User.findOne({ email });
     if (user && (await bcrypt.compare(password, user.password))) {
       user.token = await createToken(user._id, email);
+      res.cookie("token", user.token, { httpOnly: true });
 
       res.status(200).send(constructResponse("Success", user));
       return;
@@ -67,8 +69,8 @@ export const login = async (request: Request, res: Response): Promise<void> => {
 
 export const logout = async (request: Request, res: Response): Promise<void> => {
   try {
-    const user = await request.user;
-    const jti = user.jti;
+    const token = getToken(request);
+    const jti = jwrt.decode<{jti: string}>(token).jti;
 
     if (!jti) {
       sendFailResponse(res, 401, "You are logged out");

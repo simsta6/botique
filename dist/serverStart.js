@@ -27,6 +27,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.closeServer = exports.startServer = exports.app = void 0;
 const express_1 = __importStar(require("express"));
@@ -41,11 +44,13 @@ const item_2 = require("./models/item");
 const order_2 = require("./models/order");
 const util_1 = require("./util");
 const database_2 = require("./config/database");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 let server;
 const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, database_1.connect)();
     exports.app = (0, express_1.default)();
     exports.app.use((0, express_1.json)());
+    exports.app.use((0, cookie_parser_1.default)());
     const port = process.env.PORT || 5000;
     // Item
     exports.app.get("/api/items", item_1.getAllItems);

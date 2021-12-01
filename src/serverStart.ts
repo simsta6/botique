@@ -11,6 +11,7 @@ import { Item } from "./models/item";
 import { Order } from "./models/order";
 import { sendFailResponse } from "./util";
 import { closeConnection } from "./config/database";
+import cookieParser from "cookie-parser";
 
 export let app: Express;
 let server: Server;
@@ -20,6 +21,7 @@ export const startServer = async (): Promise<void> => {
 
   app = express();
   app.use(json());
+  app.use(cookieParser());
 
   const port = process.env.PORT || 5000;
 

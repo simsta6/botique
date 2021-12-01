@@ -28,11 +28,11 @@ export const verifyToken = async (request: Request, res: Response, next: NextFun
   }
 };
 
-const getToken = (request: Request): string => {
+export const getToken = (request: Request): string => {
   const authHeader = request.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const tokenFromReq = authHeader && authHeader.split(" ")[1];
 
-  return token;
+  return tokenFromReq ? tokenFromReq : request.cookies.token;
 };
 
 // eslint-disable-next-line @typescript-eslint/ban-types

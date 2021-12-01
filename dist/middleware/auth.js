@@ -9,13 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyIsAdmin = exports.verifyIsSeller = exports.verifyIsUserHasThisModel = exports.verifyToken = void 0;
+exports.verifyIsAdmin = exports.verifyIsSeller = exports.verifyIsUserHasThisModel = exports.getToken = exports.verifyToken = void 0;
 const user_1 = require("../models/user");
 const util_1 = require("../util");
 const index_1 = require("../index");
 const verifyToken = (request, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const token = getToken(request);
+        const token = (0, exports.getToken)(request);
         if (!token) {
             (0, util_1.sendFailResponse)(res, 403, "A token is required for authentication");
             return;
@@ -35,9 +35,10 @@ const verifyToken = (request, res, next) => __awaiter(void 0, void 0, void 0, fu
 exports.verifyToken = verifyToken;
 const getToken = (request) => {
     const authHeader = request.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
-    return token;
+    const tokenFromReq = authHeader && authHeader.split(" ")[1];
+    return tokenFromReq ? tokenFromReq : request.cookies.token;
 };
+exports.getToken = getToken;
 // eslint-disable-next-line @typescript-eslint/ban-types
 const verifyIsUserHasThisModel = (model) => (request, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
