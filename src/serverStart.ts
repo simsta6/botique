@@ -24,7 +24,7 @@ export const startServer = async (): Promise<void> => {
   app.use(json());
   app.use(cookieParser());
   // TODO: add front server ip here from .env
-  app.use(cors({ credentials: true, origin: true }));
+  app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
   const port = process.env.PORT || 5000;
 
