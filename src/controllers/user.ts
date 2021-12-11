@@ -57,7 +57,7 @@ export const login = async (request: Request, res: Response, next: NextFunction)
     const user = await User.findOne({ email });
     if (user && (await bcrypt.compare(password, user.password))) {
       user.token = await createToken(user._id, email);
-      res.cookie("token", user.token, { sameSite: "none",maxAge: 900000, httpOnly: true, secure: true });
+      res.cookie("token", user.token, { sameSite: "none", secure: true });
 
       res.status(200).send(constructResponse("Success", user));
       return next();
