@@ -32,6 +32,7 @@ export const register = async (request: Request, res: Response): Promise<void> =
       password: encryptedPassword,
     });
     user.token = await createToken(user._id, email);
+    res.cookie("token", user.token);
 
     res.status(201).send(constructResponse("Success", user));
     
@@ -55,7 +56,7 @@ export const login = async (request: Request, res: Response): Promise<void> => {
     const user = await User.findOne({ email });
     if (user && (await bcrypt.compare(password, user.password))) {
       user.token = await createToken(user._id, email);
-      res.cookie("token", user.token, { httpOnly: true });
+      res.cookie("token", user.token);
 
       res.status(200).send(constructResponse("Success", user));
       return;

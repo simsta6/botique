@@ -52,6 +52,7 @@ const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     exports.app = (0, express_1.default)();
     exports.app.use((0, express_1.json)());
     exports.app.use((0, cookie_parser_1.default)());
+    // TODO: add front server ip here from .env
     exports.app.use((0, cors_1.default)({ credentials: true, origin: true }));
     const port = process.env.PORT || 5000;
     // Item
