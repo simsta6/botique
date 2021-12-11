@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import { Request } from "../interfaces";
 import { Role, User } from "../models/user";
 import { constructResponse, idDoesNotExist, isBodyEmpty, isWrongId, sendFailResponse } from "../util";
