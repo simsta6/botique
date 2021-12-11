@@ -32,7 +32,7 @@ export const register = async (request: Request, res: Response, next: NextFuncti
       password: encryptedPassword,
     });
     user.token = await createToken(user._id, email);
-    res.cookie("token", user.token, { maxAge: 900000, httpOnly: true });
+    res.cookie("token", user.token, { sameSite: "none", httpOnly: true });
 
     res.status(201).send(constructResponse("Success", user));
 
