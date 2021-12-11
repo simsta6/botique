@@ -7,7 +7,7 @@ import { jwrt } from "../index";
 import { getToken } from "../middleware/auth";
 
 //USER
-export const register = async (request: Request, res: Response): Promise<void> => {
+export const register = async (request: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { first_name, last_name, email, password } = request.body;
 
@@ -35,13 +35,14 @@ export const register = async (request: Request, res: Response): Promise<void> =
     res.cookie("token", user.token, { maxAge: 900000, httpOnly: true });
 
     res.status(201).send(constructResponse("Success", user));
-    
+
+    return next();    
   } catch (error) {
     sendFailResponse(res, 400, error.message);
   }
 };
 
-export const login = async (request: Request, res: Response): Promise<void> => {
+export const login = async (request: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     if (isBodyEmpty(request))
       throw new Error();
@@ -59,7 +60,7 @@ export const login = async (request: Request, res: Response): Promise<void> => {
       res.cookie("token", user.token, { maxAge: 900000, httpOnly: true });
 
       res.status(200).send(constructResponse("Success", user));
-      return;
+      return next();
     }
     sendFailResponse(res, 400, "Invalid Credentials");
     
