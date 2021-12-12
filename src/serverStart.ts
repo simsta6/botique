@@ -47,7 +47,7 @@ export const startServer = async (): Promise<void> => {
   app.delete("/api/users/:id", verifyToken, verifyIsAdmin, deleteUser);
   app.post("/api/sellers", verifyToken, verifyIsAdmin, postSeller); 
   app.get("/api/sellers", getSellers);
-  app.get("/api/user/:id", getUser);
+  app.get("/api/users/:id", getUser);
   app.get("/api/users", verifyToken, verifyIsAdmin, getBuyersAndSellers);
   app.post("/api/register", register);
   app.post("/api/login", login);

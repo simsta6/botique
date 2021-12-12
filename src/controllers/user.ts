@@ -15,7 +15,7 @@ export const getUser = async (request: Request, res: Response): Promise<void> =>
       return;
     }
 
-    const user = await User.findOne({_id: (await request.user).user_id}).select("first_name last_name");
+    const user = await User.findOne({_id: userId}).select("first_name last_name");
     
     res.status(200).send(constructResponse("Success", user));
   } catch (error) {

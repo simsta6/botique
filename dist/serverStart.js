@@ -71,7 +71,7 @@ const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     exports.app.delete("/api/users/:id", auth_1.verifyToken, auth_1.verifyIsAdmin, user_1.deleteUser);
     exports.app.post("/api/sellers", auth_1.verifyToken, auth_1.verifyIsAdmin, user_1.postSeller);
     exports.app.get("/api/sellers", user_1.getSellers);
-    exports.app.get("/api/user/:id", user_1.getUser);
+    exports.app.get("/api/users/:id", user_1.getUser);
     exports.app.get("/api/users", auth_1.verifyToken, auth_1.verifyIsAdmin, user_1.getBuyersAndSellers);
     exports.app.post("/api/register", user_1.register);
     exports.app.post("/api/login", user_1.login);
