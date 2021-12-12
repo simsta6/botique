@@ -32,6 +32,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.closeServer = exports.startServer = exports.app = void 0;
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const cors_1 = __importDefault(require("cors"));
 const express_1 = __importStar(require("express"));
 const database_1 = require("./config/database");
 const chart_1 = require("./controllers/chart");
@@ -43,9 +45,6 @@ const auth_1 = require("./middleware/auth");
 const item_2 = require("./models/item");
 const order_2 = require("./models/order");
 const util_1 = require("./util");
-const database_2 = require("./config/database");
-const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const cors_1 = __importDefault(require("cors"));
 let server;
 const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, database_1.connect)();
@@ -53,7 +52,7 @@ const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     exports.app.use((0, express_1.json)());
     exports.app.use((0, cookie_parser_1.default)());
     // TODO: add front server ip here from .env
-    exports.app.use((0, cors_1.default)({ credentials: true, origin: true }));
+    exports.app.use((0, cors_1.default)({ credentials: true, origin: "http://localhost:3000" }));
     const port = process.env.PORT || 5000;
     // Item
     exports.app.get("/api/items", item_1.getAllItems);
@@ -72,6 +71,7 @@ const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     exports.app.delete("/api/users/:id", auth_1.verifyToken, auth_1.verifyIsAdmin, user_1.deleteUser);
     exports.app.post("/api/sellers", auth_1.verifyToken, auth_1.verifyIsAdmin, user_1.postSeller);
     exports.app.get("/api/sellers", user_1.getSellers);
+    exports.app.get("/api/user/:id", user_1.getUser);
     exports.app.get("/api/users", auth_1.verifyToken, auth_1.verifyIsAdmin, user_1.getBuyersAndSellers);
     exports.app.post("/api/register", user_1.register);
     exports.app.post("/api/login", user_1.login);
@@ -87,7 +87,7 @@ const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.startServer = startServer;
 const closeServer = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, database_2.closeConnection)();
+    yield (0, database_1.closeConnection)();
     server.close();
     exports.app = null;
 });

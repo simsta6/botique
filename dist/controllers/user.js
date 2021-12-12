@@ -12,14 +12,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBuyersAndSellers = exports.deleteUser = exports.postSeller = exports.getSellers = exports.logout = exports.login = exports.register = void 0;
+exports.getBuyersAndSellers = exports.deleteUser = exports.postSeller = exports.getSellers = exports.logout = exports.login = exports.register = exports.getUser = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const user_1 = require("../models/user");
 const util_1 = require("../util");
 const index_1 = require("../index");
 const auth_1 = require("../middleware/auth");
+const getUser = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = request.params.id;
+        if (yield (0, util_1.isWrongId)(user_1.User, userId)) {
+            (0, util_1.idDoesNotExist)(res);
+            return;
+        }
+        const user = yield user_1.User.findById(userId).select("first_name last_name");
+        res.status(200).send((0, util_1.constructResponse)("Success", user));
+    }
+    catch (error) {
+        (0, util_1.sendFailResponse)(res, 400, error.message);
+    }
+});
+exports.getUser = getUser;
 //USER
-const register = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
+const register = (request, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { first_name, last_name, email, password } = request.body;
         if (!(email && password && first_name && last_name)) {
@@ -39,14 +54,16 @@ const register = (request, res) => __awaiter(void 0, void 0, void 0, function* (
             password: encryptedPassword,
         });
         user.token = yield createToken(user._id, email);
+        res.cookie("token", user.token, { httpOnly: true });
         res.status(201).send((0, util_1.constructResponse)("Success", user));
+        return next();
     }
     catch (error) {
         (0, util_1.sendFailResponse)(res, 400, error.message);
     }
 });
 exports.register = register;
-const login = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
+const login = (request, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if ((0, util_1.isBodyEmpty)(request))
             throw new Error();
@@ -58,9 +75,9 @@ const login = (request, res) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield user_1.User.findOne({ email });
         if (user && (yield bcrypt_1.default.compare(password, user.password))) {
             user.token = yield createToken(user._id, email);
-            res.cookie("token", user.token, { httpOnly: true });
+            res.cookie("token", user.token, { sameSite: "none", secure: true });
             res.status(200).send((0, util_1.constructResponse)("Success", user));
-            return;
+            return next();
         }
         (0, util_1.sendFailResponse)(res, 400, "Invalid Credentials");
     }
