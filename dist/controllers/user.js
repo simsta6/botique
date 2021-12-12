@@ -25,7 +25,7 @@ const getUser = (request, res) => __awaiter(void 0, void 0, void 0, function* ()
             (0, util_1.idDoesNotExist)(res);
             return;
         }
-        const user = yield user_1.User.findById(userId).select("first_name last_name");
+        const user = yield user_1.User.findOne({ _id: (yield request.user).user_id }).select("first_name last_name");
         res.status(200).send((0, util_1.constructResponse)("Success", user));
     }
     catch (error) {
