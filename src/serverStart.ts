@@ -1,18 +1,17 @@
-import express, { json, Express } from "express";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import express, { Express, json } from "express";
 import { Server } from "node:http";
-import { connect } from "./config/database";
+import { closeConnection, connect } from "./config/database";
 import { addItemToChart, getAllItemsInChart } from "./controllers/chart";
 import { deleteItem, editItem, getAllItems, getItem, postItem } from "./controllers/item";
 import { changeOrderState, getAllOrders, postOrder } from "./controllers/order";
 import { deleteReview, editReview, getReview, getReviews, postReview } from "./controllers/review";
-import { deleteUser, getBuyersAndSellers, getSellers, login, logout, postSeller, register } from "./controllers/user";
+import { deleteUser, getBuyersAndSellers, getSellers, getUser, login, logout, postSeller, register } from "./controllers/user";
 import { verifyIsAdmin, verifyIsSeller, verifyIsUserHasThisModel, verifyToken } from "./middleware/auth";
 import { Item } from "./models/item";
 import { Order } from "./models/order";
 import { sendFailResponse } from "./util";
-import { closeConnection } from "./config/database";
-import cookieParser from "cookie-parser";
-import cors from "cors";
 
 export let app: Express;
 let server: Server;
@@ -48,6 +47,7 @@ export const startServer = async (): Promise<void> => {
   app.delete("/api/users/:id", verifyToken, verifyIsAdmin, deleteUser);
   app.post("/api/sellers", verifyToken, verifyIsAdmin, postSeller); 
   app.get("/api/sellers", getSellers);
+  app.get("/api/user/:id", getUser);
   app.get("/api/users", verifyToken, verifyIsAdmin, getBuyersAndSellers);
   app.post("/api/register", register);
   app.post("/api/login", login);
