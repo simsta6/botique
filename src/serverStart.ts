@@ -23,7 +23,7 @@ export const startServer = async (): Promise<void> => {
   app.use(json());
   app.use(cookieParser());
   // TODO: add front server ip here from .env
-  app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+  app.use(cors({ credentials: true, origin: "https://botique-front-778zn9lc6-simsta6.vercel.app" }));
 
   const port = process.env.PORT || 5000;
 
